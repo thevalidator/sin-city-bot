@@ -6,6 +6,8 @@ package ru.thekrechetofficial.sincitybot.service.impl;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -32,7 +34,6 @@ public class MessageHandlerImpl implements MessageHandler {
         List<SendMessage> response = null;
 
         if (incomeMsg.startsWith("/")) {
-
             if (incomeMsg.equals(COMMAND.START.getCommand())) {
 
                 User user = update.getMessage().getFrom();//.getMessage().getContact();
@@ -50,7 +51,6 @@ public class MessageHandlerImpl implements MessageHandler {
                 response = List.of(toSheriff, toVisitor);
 
             }
-
         } else if (incomeMsg.equals(COMMAND.HELP.getCommand())) {
             response = List.of(new SendMessage(visitorId, MESSAGE.HELP.getMsg()));
         } else if (incomeMsg.equals(COMMAND.ACCOUNT.getCommand())) {
@@ -65,7 +65,7 @@ public class MessageHandlerImpl implements MessageHandler {
             response = List.of(toVisitor);
         } else if (incomeMsg.equals(COMMAND.SCOUT.getCommand())) {
             SendMessage toVisitor = new SendMessage(visitorId, "Кого ищем?");
-            //toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
+            toVisitor.setReplyMarkup(InlineKeyboard.getGenderOptionForSearch());
             response = List.of(toVisitor);
         } else if (incomeMsg.equals(COMMAND.TARGET.getCommand())) {
             SendMessage toVisitor = new SendMessage(visitorId, "Введи контактные данные");
@@ -91,7 +91,38 @@ public class MessageHandlerImpl implements MessageHandler {
 
     @Override
     public List<SendMessage> callBackDataMessage(Update update) {
+
+        String option = update.getCallbackQuery().getData();
+        String visitorId = String.valueOf(update.getCallbackQuery().getFrom().getId());// String.valueOf(update.getMessage().getChatId());
+        List<SendMessage> response = null;
+
+        if (option.matches("[MFCT]{1}")) {
+
+            SendMessage toVisitor = new SendMessage(visitorId, "Количество последних объявлений?");
+            toVisitor.setReplyMarkup(InlineKeyboard.getNumOptionForSearch(option));
+            response = List.of(toVisitor);
+
+        } else if (option.matches("[MFCT]{1} [0-9]{1,2}")) {
+            
+            SendMessage toVisitor = new SendMessage(visitorId, "Количество последних объявлений?");
+            toVisitor.setReplyMarkup(InlineKeyboard.getNumOptionForSearch(option));
+            //response = List.of(toVisitor, getAnswerCallbackQuery(visitorId));
+            
+        }
+        
+        if (response != null) {
+            return response;
+        }
+
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    private static AnswerCallbackQuery getAnswerCallbackQuery(String id) {
+        AnswerCallbackQuery answer = new AnswerCallbackQuery();
+        answer.setCallbackQueryId(id);
+        BotApiMethod a = answer;
+
+        return answer;
     }
 
 }
