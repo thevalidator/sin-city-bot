@@ -4,7 +4,7 @@
 package ru.thekrechetofficial.sincitybot.service;
 
 import java.util.List;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 /**
@@ -13,10 +13,10 @@ import org.telegram.telegrambots.meta.api.objects.Update;
  */
 public interface MessageHandler {
     
-    List<SendMessage> textMessage(Update update);
+    List<BotApiMethod> textMessage(Update update);
     
-    List<SendMessage> replyMessage(Update update);
+    List<BotApiMethod> replyMessage(Update update);
     
-    List<SendMessage> callBackDataMessage(Update update);
+    List<BotApiMethod> callBackDataMessage(Update update);
     
 }

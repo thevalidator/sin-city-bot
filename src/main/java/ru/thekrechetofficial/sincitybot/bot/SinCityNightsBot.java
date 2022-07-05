@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -45,7 +46,7 @@ public class SinCityNightsBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         
-        List<SendMessage> messages = null;
+        List<BotApiMethod> messages = null;
         
         if (update.hasMessage()) {
 
@@ -54,14 +55,18 @@ public class SinCityNightsBot extends TelegramLongPollingBot {
             } else if (update.getMessage().hasText()) {
                 messages = messageHandler.textMessage(update);
             } else {
-                messages = List.of(new SendMessage(String.valueOf(update.getMessage().getChatId()), "UNDER CONSTRUCTION, WE'LL BE BACK SOON!"));
+                messages = List.of(new SendMessage(String.valueOf(update.getMessage().getChatId()), "UNDER CONSTRUCTION, SUKA BLYAT!"));
             }
             
         } else if (update.hasCallbackQuery()) {
             messages = messageHandler.callBackDataMessage(update);
         }
         
-        executeAll(messages);
+        if (messages != null) {
+            executeAll(messages);
+        } else {
+            System.out.println(update.toString());
+        }
         
     }
 
@@ -70,11 +75,11 @@ public class SinCityNightsBot extends TelegramLongPollingBot {
         return botName;
     }
 
-    private void executeAll(List<SendMessage> messages) {
+    private void executeAll(List<BotApiMethod> messages) {
 
         try {
             
-            for (SendMessage m : messages) {
+            for (BotApiMethod m : messages) {
                 execute(m);
                 //execute(this)
             }
