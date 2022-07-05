@@ -3,12 +3,11 @@
  */
 package ru.thekrechetofficial.sincitybot.service.impl;
 
-import java.lang.reflect.Array;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -20,10 +19,15 @@ import ru.thekrechetofficial.sincitybot.bot.COMMAND;
 import ru.thekrechetofficial.sincitybot.bot.InlineKeyboard;
 import ru.thekrechetofficial.sincitybot.bot.MESSAGE;
 import ru.thekrechetofficial.sincitybot.bot.ReplyKeyboard;
+import ru.thekrechetofficial.sincitybot.entity.SUBSCRIPTION_TYPE;
+import ru.thekrechetofficial.sincitybot.entity.ScoutQuery;
+import ru.thekrechetofficial.sincitybot.entity.Subscription;
+import ru.thekrechetofficial.sincitybot.entity.Visitor;
 import ru.thekrechetofficial.sincitybot.entity.ad.GENDER;
 import ru.thekrechetofficial.sincitybot.entity.ad.NLAd;
 import ru.thekrechetofficial.sincitybot.service.MessageHandler;
 import ru.thekrechetofficial.sincitybot.service.NLAdService;
+import ru.thekrechetofficial.sincitybot.service.VisitorService;
 
 /**
  * @author theValidator <the.validator@yandex.ru>
@@ -31,23 +35,23 @@ import ru.thekrechetofficial.sincitybot.service.NLAdService;
 @Service
 public class MessageHandlerImpl implements MessageHandler {
 
-    //@Value("${telegram.sheriff.id}")
+    @Value("${telegram.sheriff.id}")
     private String sheriffId;
-    private final NLAdService service;
+    private final NLAdService nlService;
+    private final VisitorService visitorService;
 
     @Autowired
-    public MessageHandlerImpl(NLAdService service, @Value("${telegram.sheriff.id}") String sheriffId) {
-        this.service = service;
+    public MessageHandlerImpl(NLAdService nlService, VisitorService visitorService, @Value("${telegram.sheriff.id}") String sheriffId) {
+        this.nlService = nlService;
+        this.visitorService = visitorService;
     }
-    
-    
 
     @Override
     public List<BotApiMethod> textMessage(Update update) {
 
         String incomeMsg = update.getMessage().getText();
         String visitorId = String.valueOf(update.getMessage().getChatId());
-        List<BotApiMethod> response = null;
+        List<BotApiMethod> response = new ArrayList<>();
 
         if (incomeMsg.startsWith("/")) {
             if (incomeMsg.equals(COMMAND.START.getCommand())) {
@@ -62,46 +66,53 @@ public class MessageHandlerImpl implements MessageHandler {
 
                 SendMessage toVisitor = new SendMessage(visitorId, MESSAGE.GREETENG.getMsg());
                 toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
-                SendMessage toSheriff = new SendMessage(sheriffId, visitor);
+                response.add(toVisitor);
 
-                response = List.of(toSheriff, toVisitor);
+                if (!visitorService.isExistByTelegramId(visitorId)) {
+                    SendMessage toSheriff = new SendMessage(sheriffId, visitor);
+                    response.add(toSheriff);
+                    Visitor v = new Visitor(visitorId, LocalDateTime.now(), new Subscription(SUBSCRIPTION_TYPE.STANDARD), new ScoutQuery());
+                    visitorService.saveVisitor(v);
+                }
 
             }
+            
         } else if (incomeMsg.equals(COMMAND.HELP.getCommand())) {
-            response = List.of(new SendMessage(visitorId, MESSAGE.HELP.getMsg()));
+            SendMessage toVisitor = new SendMessage(visitorId, MESSAGE.HELP.getMsg());
+            //toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());                          //TODO: probably not needed
+            response.add(toVisitor);
         } else if (incomeMsg.equals(COMMAND.ACCOUNT.getCommand())) {
-            response = List.of(new SendMessage(String.valueOf(update.getMessage().getChatId()), "UNDER CONSTRUCTION, WE'LL BE BACK SOON!"));
+            SendMessage toVisitor = new SendMessage(visitorId, "UNDER CONSTRUCTION, SUKA BLYAT!");
+            //toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());                          //TODO: probably not needed
+            response.add(toVisitor);
         } else if (incomeMsg.equals(COMMAND.SEARCH.getCommand())) {
-            SendMessage toVisitor = new SendMessage(visitorId, "Выбери опцию");
+            SendMessage toVisitor = new SendMessage(visitorId, "Выбери опцию ⤵️");
             toVisitor.setReplyMarkup(ReplyKeyboard.getSearchKeyboard());
-            response = List.of(toVisitor);
+            response.add(toVisitor);
         } else if (incomeMsg.equals(COMMAND.BACK.getCommand())) {
             SendMessage toVisitor = new SendMessage(visitorId, "Главное меню");
             toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
-            response = List.of(toVisitor);
+            response.add(toVisitor);
         } else if (incomeMsg.equals(COMMAND.SCOUT.getCommand())) {
             SendMessage toVisitor = new SendMessage(visitorId, "Кого ищем?");
             toVisitor.setReplyMarkup(InlineKeyboard.getGenderOptionForSearch());
-            response = List.of(toVisitor);
+            response.add(toVisitor);
         } else if (incomeMsg.equals(COMMAND.TARGET.getCommand())) {
 //            SendMessage toVisitor = new SendMessage(visitorId, "Введи контактные данные");
 //            //toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
 //            response = List.of(toVisitor);
-            
-            List<NLAd> ads = service.getNewestByCreatorWithLimit(GENDER.FEMALE.toString(), 5);
-            
-            String msg = "TOTAL: " + ads.size() + "\n" + ads.get(0).toString();
-            
 
 
-            response = List.of(new SendMessage(String.valueOf(update.getMessage().getChatId()), msg));
+            SendMessage toVisitor = new SendMessage(visitorId, "UNDER CONSTRUCTION, SUKA BLYAT!");
+            //toVisitor.setReplyMarkup(ReplyKeyboard.getSearchKeyboard());                        //TODO: probably not needed
+            response.add(toVisitor);
+
         }
 
-        if (response == null) {
+        if (response.isEmpty()) {
             SendMessage toVisitor = new SendMessage(visitorId, MESSAGE.NO_ANSWER.getMsg());
             toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
-            response = List.of(toVisitor);
-            //response = List.of(new SendMessage(String.valueOf(update.getMessage().getChatId()), "UNDER CONSTRUCTION, SUKA BLYAT!"));
+            response.add(toVisitor);
         }
 
         return response;
@@ -129,26 +140,18 @@ public class MessageHandlerImpl implements MessageHandler {
             msg.setMessageId(messageId);
             msg.setText("Количество последних объявлений?");
             msg.setReplyMarkup(InlineKeyboard.getNumOptionForSearch(option));
-            
+
             response.add(msg);
             
-            
-            //SendMessage toVisitor = new SendMessage(visitorId, "Количество последних объявлений?");
-            //toVisitor.setReplyMarkup(InlineKeyboard.getNumOptionForSearch(option));
-            //response.add(toVisitor);
-
         } else if (option.matches("[MFCT]{1} [0-9]{1,2}")) {
-            
+
             EditMessageText msg = new EditMessageText();
             msg.setChatId(visitorId);
             msg.setMessageId(messageId);
             msg.setText("UNDER CONSTRUCTION, SUKA BLYAT!");
 
             response.add(msg);
-
-//            SendMessage toVisitor = new SendMessage(visitorId, "Количество последних объявлений?");
-//            toVisitor.setReplyMarkup(InlineKeyboard.getNumOptionForSearch(option));
-//            response.add(toVisitor);
+            
         }
 
         if (!response.isEmpty()) {
@@ -156,7 +159,7 @@ public class MessageHandlerImpl implements MessageHandler {
             return response;
         }
 
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new IllegalArgumentException("Wrong data: " + option);
     }
 
     private static AnswerCallbackQuery getAnswerCallbackQuery(String id) {
