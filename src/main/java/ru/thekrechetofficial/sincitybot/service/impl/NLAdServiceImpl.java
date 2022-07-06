@@ -32,8 +32,8 @@ public class NLAdServiceImpl implements NLAdService {
     }
 
     @Override
-    public NLAd getAdByOfferId(String offerId) {
-        return repository.findByOfferId(offerId).orElseThrow();
+    public NLAd getAdById(String id) {
+        return repository.findById(Long.valueOf(id)).orElseThrow();
     }
     
     

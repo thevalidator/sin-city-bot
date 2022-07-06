@@ -34,7 +34,8 @@ public enum MESSAGE {
             //"\n\n-> <a href=\"https://vk.com/club204138420\"><b>Группа VK</b></a>" +
             //"\n\n-> <a href=\"https://youtu.be/p8hcFTqg4w4\"><b>Видеоинструкция на YouTube</b></a>" +
             //"\n\n-> <a href=\"https://qiwi.com/SINCITYNIGHTS\"><b>Донат по желанию разработчикам на шоколадки</b></a>
-            "");
+            ""), 
+    INVALID("Данные устарели, начни заново");
 
     String msg;
 

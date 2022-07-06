@@ -14,6 +14,6 @@ public interface NLAdService {
     
     List<String> getNewestOfferIdByCreatorWithLimit(String creator, int limit);
 
-    public NLAd getAdByOfferId(String get);
+    public NLAd getAdById(String id);
     
 }

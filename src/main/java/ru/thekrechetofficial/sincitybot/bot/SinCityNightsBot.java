@@ -45,9 +45,9 @@ public class SinCityNightsBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        
+
         List<BotApiMethod> messages = null;
-        
+
         if (update.hasMessage()) {
 
             if (update.getMessage().isReply()) {
@@ -57,17 +57,19 @@ public class SinCityNightsBot extends TelegramLongPollingBot {
             } else {
                 messages = List.of(new SendMessage(String.valueOf(update.getMessage().getChatId()), "UNDER CONSTRUCTION, SUKA BLYAT!"));
             }
-            
+
         } else if (update.hasCallbackQuery()) {
+            String id = update.getCallbackQuery().getId();
+            executeOne(messageHandler.getAnswerCallbackQuery(id, "Обрабатывается"));
             messages = messageHandler.callBackDataMessage(update);
         }
-        
+
         if (messages != null) {
             executeAll(messages);
         } else {
             System.out.println(update.toString());
         }
-        
+
     }
 
     @Override
@@ -75,14 +77,22 @@ public class SinCityNightsBot extends TelegramLongPollingBot {
         return botName;
     }
 
+    private void executeOne(BotApiMethod message) {
+        try {
+            execute(message);
+        } catch (TelegramApiException ex) {
+            Logger.getLogger(SinCityNightsBot.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     private void executeAll(List<BotApiMethod> messages) {
 
         try {
-            
+
             for (BotApiMethod m : messages) {
                 execute(m);
             }
-            
+
         } catch (TelegramApiException ex) {
             Logger.getLogger(SinCityNightsBot.class.getName()).log(Level.SEVERE, null, ex);
         }

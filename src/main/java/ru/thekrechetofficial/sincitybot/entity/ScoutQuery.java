@@ -20,7 +20,8 @@ public class ScoutQuery implements Serializable {
     @ElementCollection
     @Column(name="offers")
     private final List<String> queryOffers = new ArrayList<>();
-    private String timestamp;
+    @Column(name="query_stamp")
+    private String queryStamp;
 
     public ScoutQuery() {
     }
@@ -34,12 +35,12 @@ public class ScoutQuery implements Serializable {
         this.queryOffers.addAll(offers);
     }
 
-    public String getTimestamp() {
-        return timestamp;
+    public String getQueryStamp() {
+        return queryStamp;
     }
 
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
+    public void setQueryStamp(String queryStamp) {
+        this.queryStamp = queryStamp;
     }
     
 

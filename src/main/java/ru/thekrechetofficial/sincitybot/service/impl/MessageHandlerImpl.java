@@ -5,7 +5,6 @@ package ru.thekrechetofficial.sincitybot.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,8 +56,8 @@ public class MessageHandlerImpl implements MessageHandler {
         if (incomeMsg.startsWith("/")) {
             if (incomeMsg.equals(COMMAND.START.getCommand())) {
 
-                User user = update.getMessage().getFrom();//.getMessage().getContact();
-                String visitor = String.format("𝕾𝖍𝖊𝖗𝖎𝖋𝖋, 𝖓𝖊𝖜 𝖛𝖎𝖘𝖎𝖙𝖔𝖗 𝖎𝖓 𝖙𝖍𝖊 𝖈𝖎𝖙𝖞!\n\nɪᴅ: %d\nɴᴀᴍᴇ: %s\n"
+                User user = update.getMessage().getFrom();
+                String newVisitorInformMsg = String.format("𝕾𝖍𝖊𝖗𝖎𝖋𝖋, 𝖓𝖊𝖜 𝖛𝖎𝖘𝖎𝖙𝖔𝖗 𝖎𝖓 𝖙𝖍𝖊 𝖈𝖎𝖙𝖞!\n\nɪᴅ: %d\nɴᴀᴍᴇ: %s\n"
                         + "ᴜꜱᴇʀɴᴀᴍᴇ: %s\nʟᴀɴɢᴜᴀɢᴇ: %s\n",
                         user.getId(),
                         user.getFirstName() + " " + user.getLastName(),
@@ -70,14 +69,14 @@ public class MessageHandlerImpl implements MessageHandler {
                 response.add(toVisitor);
 
                 if (!visitorService.isExistByTelegramId(visitorId)) {
-                    SendMessage toSheriff = new SendMessage(sheriffId, visitor);
+                    SendMessage toSheriff = new SendMessage(sheriffId, newVisitorInformMsg);
                     response.add(toSheriff);
-                    Visitor v = new Visitor(visitorId, LocalDateTime.now(), new Subscription(SUBSCRIPTION_TYPE.STANDARD), new ScoutQuery());
+                    Visitor v = createVisitor(visitorId);
                     visitorService.saveVisitor(v);
                 }
 
             }
-            
+
         } else if (incomeMsg.equals(COMMAND.HELP.getCommand())) {
             SendMessage toVisitor = new SendMessage(visitorId, MESSAGE.HELP.getMsg());
             //toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());                          //TODO: probably not needed
@@ -102,7 +101,6 @@ public class MessageHandlerImpl implements MessageHandler {
 //            SendMessage toVisitor = new SendMessage(visitorId, "Введи контактные данные");
 //            //toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
 //            response = List.of(toVisitor);
-
 
             SendMessage toVisitor = new SendMessage(visitorId, "UNDER CONSTRUCTION, SUKA BLYAT!");
             //toVisitor.setReplyMarkup(ReplyKeyboard.getSearchKeyboard());                        //TODO: probably not needed
@@ -129,12 +127,13 @@ public class MessageHandlerImpl implements MessageHandler {
     public List<BotApiMethod> callBackDataMessage(Update update) {
 
         String option = update.getCallbackQuery().getData();
-        String visitorId = String.valueOf(update.getCallbackQuery().getFrom().getId());// String.valueOf(update.getMessage().getChatId());
-        String queryId = update.getCallbackQuery().getId();
+        String visitorId = String.valueOf(update.getCallbackQuery().getFrom().getId());
+        //String queryId = update.getCallbackQuery().getId();
         int messageId = update.getCallbackQuery().getMessage().getMessageId();
         List<BotApiMethod> response = new ArrayList<>();
+        //response.add(getAnswerCallbackQuery(queryId));
 
-        if (option.matches("[MFCT]{1}")) {
+        if (option.matches("^[MFCT]{1}$")) {
 
             EditMessageText msg = new EditMessageText();
             msg.setChatId(visitorId);
@@ -143,44 +142,95 @@ public class MessageHandlerImpl implements MessageHandler {
             msg.setReplyMarkup(InlineKeyboard.getNumOptionForSearch(option));
 
             response.add(msg);
-            
-        } else if (option.matches("[MFCT]{1} [0-9]{1,2}")) {
-            
+
+        } else if (option.matches("^[MFCT]{1} [0-9]{1,2}$")) {
+
             String[] data = option.split(" ");
-            System.out.println(data[0]);
-            System.out.println(data[1]);
+
+            List<String> offerIds = nlService.getNewestOfferIdByCreatorWithLimit(
+                    Gender.fromString(data[0]).toString(),
+                    Integer.valueOf(data[1]));
             
-            List<String> offerIds = nlService.getNewestOfferIdByCreatorWithLimit(Gender.fromString(data[0]).toString(), Integer.valueOf(data[1]));
-            Visitor visitor = visitorService.getFullVisitorByTelegramId(visitorId);
+            Visitor visitor = visitorService.getOptionalFullVisitorByTelegramId(visitorId);
+            
             String timestamp = String.valueOf(System.currentTimeMillis());
-            visitor.getScoutQuery().createQueryOffers(offerIds);
-            visitor.getScoutQuery().setTimestamp(timestamp);
+            visitor.updateQueryData(offerIds, timestamp);
+            //visitor.getScoutQuery().createQueryOffers(offerIds);
+            //visitor.getScoutQuery().setQueryStamp(timestamp);
             visitorService.saveVisitor(visitor);
-            
-            NLAd ad = nlService.getAdByOfferId(offerIds.get(0));
+
+            NLAd ad = nlService.getAdById(offerIds.get(0));
 
             EditMessageText msg = new EditMessageText();
             msg.setChatId(visitorId);
             msg.setMessageId(messageId);
             msg.setText(ad.toString());
-            msg.setReplyMarkup(InlineKeyboard.getAdsView(offerIds.size(), timestamp));
+            msg.setReplyMarkup(InlineKeyboard.getAdsView(1, offerIds.size(), timestamp));
 
             response.add(msg);
+
+        } else if (option.matches("^[0-9]{1,2}-[0-9]{1,2}-[0-9]{1,}$")) {
+
+            String[] data = option.split("-");
+
+            int page = Integer.valueOf(data[0]);
+            int pagesTotal = Integer.valueOf(data[1]);
             
-        }
+            EditMessageText msg = new EditMessageText();
+            msg.setChatId(visitorId);
+            msg.setMessageId(messageId);
+            
+            //String actualQueryStamp = visitorService.getVisitorsQueryStamp(visitorId);
+            Visitor visitor = visitorService.getOptionalFullVisitorByTelegramId(visitorId);
+            String actualQueryStamp = visitor.getScoutQuery().getQueryStamp();
+
+            if (!actualQueryStamp.equals(data[2])) {
+                msg.setText(MESSAGE.INVALID.getMsg());
+            } else {
+                
+                //Visitor visitor = visitorService.getOptionalFullVisitorByTelegramId(visitorId);
+                List<String> queryOffers = visitor.getScoutQuery().getQueryOffers();
+                String offerToShow = queryOffers.get(page - 1);
+                NLAd ad = nlService.getAdById(offerToShow);
+
+                msg.setText(ad.toString());
+                msg.setReplyMarkup(InlineKeyboard.getAdsView(page, pagesTotal, actualQueryStamp));
+                
+            }
+
+            response.add(msg);
+
+        } else if (option.equals("0")) {
+            EditMessageText msg = new EditMessageText();
+            msg.setChatId(visitorId);
+            msg.setMessageId(messageId);
+            msg.setText("Просмотр окончен");
+            //msg.setReplyMarkup(InlineKeyboard.getAdsView(1, offerIds.size(), timestamp));
+
+            response.add(msg);
+        } //else {
+          //  throw new IllegalArgumentException("Wrong data: " + option);
+        //}
 
         if (!response.isEmpty()) {
-            response.add(getAnswerCallbackQuery(queryId));
             return response;
         }
-
+        
         throw new IllegalArgumentException("Wrong data: " + option);
+        
     }
 
-    private static AnswerCallbackQuery getAnswerCallbackQuery(String id) {
+    @Override
+    public AnswerCallbackQuery getAnswerCallbackQuery(String id, String text) {
         AnswerCallbackQuery answer = new AnswerCallbackQuery();
         answer.setCallbackQueryId(id);
+        answer.setText(text);
         return answer;
+    }
+    
+    private Visitor createVisitor(String visitorId) {
+        Visitor newVisitor = new Visitor(visitorId, LocalDateTime.now(), new Subscription(SUBSCRIPTION_TYPE.STANDARD), new ScoutQuery());
+        return newVisitor;
     }
 
 }

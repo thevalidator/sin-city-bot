@@ -21,32 +21,30 @@ public class InlineKeyboard {
         InlineKeyboardButton searchButton = new InlineKeyboardButton();
         searchButton.setText("Поиск");
         searchButton.setCallbackData("SRCH");
-        
+
         List<InlineKeyboardButton> firstRow = new ArrayList<>();
         firstRow.add(searchButton);
-        
+
         InlineKeyboardButton helpButton = new InlineKeyboardButton();
         helpButton.setText("Помощь");
         helpButton.setCallbackData("HLP");
-        
+
         List<InlineKeyboardButton> thirdRow = new ArrayList<>();
         thirdRow.add(helpButton);
-        
+
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
         rows.add(firstRow);
         rows.add(thirdRow);
-        
+
         keyboard.setKeyboard(rows);
-        
+
         return keyboard;
     }
-    
-    
-    
+
     public static InlineKeyboardMarkup getGenderOptionForSearch() {
-        
+
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
-        
+
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
         List<InlineKeyboardButton> firstRow = new ArrayList<>();
         List<InlineKeyboardButton> secondRow = new ArrayList<>();
@@ -57,8 +55,7 @@ public class InlineKeyboard {
         InlineKeyboardButton btnF = new InlineKeyboardButton();
         btnF.setText("женщин");
         btnF.setCallbackData(Gender.FEMALE.getOption());
-        
-       
+
         InlineKeyboardButton btnC = new InlineKeyboardButton();
         btnC.setText("пары");
         btnC.setCallbackData(Gender.COUPLE.getOption());
@@ -75,15 +72,15 @@ public class InlineKeyboard {
         keyboard.setKeyboard(rows);
 
         return keyboard;
-        
+
     }
-    
+
     public static InlineKeyboardMarkup getNumOptionForSearch(String option) {
-        
+
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
         List<InlineKeyboardButton> firstRow = new ArrayList<>();
-        
+
         String btnOneText = "1";
         String btnTwoText = "5";
         String btnThreeText = "10";
@@ -106,31 +103,40 @@ public class InlineKeyboard {
         firstRow.add(btnTwo);
         firstRow.add(btnThree);
         firstRow.add(btnFour);
-        
+
         rows.add(firstRow);
         keyboard.setKeyboard(rows);
 
         return keyboard;
-        
+
     }
 
-    public static InlineKeyboardMarkup getAdsView(int number, String timestamp) {
+    public static InlineKeyboardMarkup getAdsView(int actualPage, int totalPages, String timestamp) {
         
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
         List<InlineKeyboardButton> firstRow = new ArrayList<>();
-        
+
+        if (actualPage > 1 && actualPage <= totalPages) {
+            InlineKeyboardButton btnPrevious = new InlineKeyboardButton();
+            btnPrevious.setText("<<");
+            btnPrevious.setCallbackData((actualPage - 1) + "-" + totalPages + "-" + timestamp);
+            firstRow.add(btnPrevious);
+        }
+
         InlineKeyboardButton btnCenter = new InlineKeyboardButton();
-        btnCenter.setText("1/" + number);
+        btnCenter.setText(actualPage + "/" + totalPages);
         btnCenter.setCallbackData("0");
-        
-        InlineKeyboardButton btnNext = new InlineKeyboardButton();
-        btnNext.setText(">>");
-        btnNext.setCallbackData("1-" + number + "-" + timestamp);
-        
-           
         firstRow.add(btnCenter);
-        firstRow.add(btnNext);
+
+        if (actualPage < totalPages) {
+            InlineKeyboardButton btnNext = new InlineKeyboardButton();
+            btnNext.setText(">>");
+            int pageToShow = actualPage + 1;
+            btnNext.setCallbackData(pageToShow + "-" + totalPages + "-" + timestamp);
+            firstRow.add(btnNext);
+        }
+        
         rows.add(firstRow);
         keyboard.setKeyboard(rows);
 

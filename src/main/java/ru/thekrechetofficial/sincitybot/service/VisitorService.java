@@ -3,6 +3,7 @@
  */
 package ru.thekrechetofficial.sincitybot.service;
 
+import java.util.Optional;
 import ru.thekrechetofficial.sincitybot.entity.Visitor;
 
 /**
@@ -13,10 +14,16 @@ public interface VisitorService {
     
     void saveVisitor(Visitor visitor);
     
+    boolean isExistByTelegramId(String id);
+    
     Visitor getVisitorByTelegramId(String id);
     
     Visitor getFullVisitorByTelegramId(String id);
     
-    boolean isExistByTelegramId(String id);
+//    String getVisitorsQueryStamp(String id);
+    
+    Visitor getOptionalFullVisitorByTelegramId(String id);
+    
+//    Optional<String> getOptionalVisitorsQueryStamp(String id);
     
 }

@@ -1,11 +1,11 @@
 /*
  * The Krechet Software
  */
-
 package ru.thekrechetofficial.sincitybot.entity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -18,7 +18,7 @@ import javax.persistence.Id;
  */
 @Entity
 public class Visitor implements Serializable {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -28,7 +28,7 @@ public class Visitor implements Serializable {
     private LocalDateTime joinedStamp;
     @Embedded
     private Subscription subscription;
-    
+
     private ScoutQuery scoutQuery;
 
     public Visitor() {
@@ -77,8 +77,10 @@ public class Visitor implements Serializable {
         this.subscription = subscription;
     }
 
-    
-    // What if no setters (not needed here some of them) 
-    
+    public void updateQueryData(List<String> offerIds, String timestamp) {
+        this.getScoutQuery().createQueryOffers(offerIds);
+        this.getScoutQuery().setQueryStamp(timestamp);
+    }
 
+    // What if no setters (not needed here some of them) 
 }

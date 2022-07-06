@@ -21,13 +21,18 @@ public interface NLAdRepository extends JpaRepository<NLAd, Long> {
 
     Optional<NLAd> findByOfferId(String offerId);
 
-    @Query(value = "SELECT offerid "
-            + "FROM (SELECT DISTINCT offerid, created_on "
-                + "FROM nlads n "
-                + "WHERE creator = ? "
-                + "ORDER BY created_on desc "
-                + "LIMIT ?"
-            + ") AS foo", nativeQuery = true)
+//    @Query(value = "SELECT foo.offerid "
+//            + "FROM (SELECT DISTINCT offerid, created_on "
+//                + "FROM nlads n "
+//                + "WHERE creator = ? "
+//                + "ORDER BY created_on desc "
+//                + "LIMIT ?"
+//            + ") AS foo", nativeQuery = true)
+    @Query(value = "SELECT n.id "
+                    + "FROM nlads n "
+                        + "WHERE creator = ? "
+                            + "ORDER BY created_on desc "
+                              + "LIMIT ?", nativeQuery = true)
     List<String> findNewestOfferIdByCreatorWithLimit(String creator, int limit);
 
 }

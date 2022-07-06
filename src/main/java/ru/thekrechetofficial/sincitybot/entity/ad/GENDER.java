@@ -40,14 +40,5 @@ public enum Gender {
         
         throw new IllegalArgumentException();
     }
-    
-//    public static GenderOption fromString(String text) {
-//        for (GenderOption o : GenderOption.values()) {
-//            if (o.option.equalsIgnoreCase(text)) {
-//                return o;
-//            }
-//        }
-//        return GenderOption.ALL;
-//    }
 
 }
