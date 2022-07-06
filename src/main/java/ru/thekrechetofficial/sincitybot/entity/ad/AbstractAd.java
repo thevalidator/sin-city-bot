@@ -34,7 +34,7 @@ public abstract class AbstractAd implements Comparable<AbstractAd>, Serializable
     @Column(name = "created_on")
     private LocalDateTime timestamp;
     @Enumerated(EnumType.STRING)
-    private GENDER creator;
+    private Gender creator;
 
     public AbstractAd() {
     }
@@ -45,7 +45,7 @@ public abstract class AbstractAd implements Comparable<AbstractAd>, Serializable
                         String place,
                         String contact,
                         LocalDateTime timestamp,
-                        GENDER creator) {
+                        Gender creator) {
         
         this.offerId = offerId;
         this.title = title;
@@ -84,7 +84,7 @@ public abstract class AbstractAd implements Comparable<AbstractAd>, Serializable
         return timestamp;
     }
 
-    public GENDER getCreator() {
+    public Gender getCreator() {
         return creator;
     }
 
@@ -116,7 +116,7 @@ public abstract class AbstractAd implements Comparable<AbstractAd>, Serializable
         this.timestamp = timestamp;
     }
 
-    public void setCreator(GENDER creator) {
+    public void setCreator(Gender creator) {
         this.creator = creator;
     }
 

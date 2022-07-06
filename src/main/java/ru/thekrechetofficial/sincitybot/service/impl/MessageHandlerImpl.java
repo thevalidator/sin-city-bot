@@ -5,6 +5,7 @@ package ru.thekrechetofficial.sincitybot.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +24,7 @@ import ru.thekrechetofficial.sincitybot.entity.SUBSCRIPTION_TYPE;
 import ru.thekrechetofficial.sincitybot.entity.ScoutQuery;
 import ru.thekrechetofficial.sincitybot.entity.Subscription;
 import ru.thekrechetofficial.sincitybot.entity.Visitor;
-import ru.thekrechetofficial.sincitybot.entity.ad.GENDER;
+import ru.thekrechetofficial.sincitybot.entity.ad.Gender;
 import ru.thekrechetofficial.sincitybot.entity.ad.NLAd;
 import ru.thekrechetofficial.sincitybot.service.MessageHandler;
 import ru.thekrechetofficial.sincitybot.service.NLAdService;
@@ -144,11 +145,25 @@ public class MessageHandlerImpl implements MessageHandler {
             response.add(msg);
             
         } else if (option.matches("[MFCT]{1} [0-9]{1,2}")) {
+            
+            String[] data = option.split(" ");
+            System.out.println(data[0]);
+            System.out.println(data[1]);
+            
+            List<String> offerIds = nlService.getNewestOfferIdByCreatorWithLimit(Gender.fromString(data[0]).toString(), Integer.valueOf(data[1]));
+            Visitor visitor = visitorService.getFullVisitorByTelegramId(visitorId);
+            String timestamp = String.valueOf(System.currentTimeMillis());
+            visitor.getScoutQuery().createQueryOffers(offerIds);
+            visitor.getScoutQuery().setTimestamp(timestamp);
+            visitorService.saveVisitor(visitor);
+            
+            NLAd ad = nlService.getAdByOfferId(offerIds.get(0));
 
             EditMessageText msg = new EditMessageText();
             msg.setChatId(visitorId);
             msg.setMessageId(messageId);
-            msg.setText("UNDER CONSTRUCTION, SUKA BLYAT!");
+            msg.setText(ad.toString());
+            msg.setReplyMarkup(InlineKeyboard.getAdsView(offerIds.size(), timestamp));
 
             response.add(msg);
             

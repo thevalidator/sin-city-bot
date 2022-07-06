@@ -12,6 +12,8 @@ import ru.thekrechetofficial.sincitybot.entity.ad.NLAd;
  */
 public interface NLAdService {
     
-    List<NLAd> getNewestByCreatorWithLimit(String creator, int limit);
+    List<String> getNewestOfferIdByCreatorWithLimit(String creator, int limit);
+
+    public NLAd getAdByOfferId(String get);
     
 }

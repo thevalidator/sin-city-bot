@@ -16,16 +16,18 @@ import ru.thekrechetofficial.sincitybot.entity.ad.NLAd;
  */
 @Repository
 public interface NLAdRepository extends JpaRepository<NLAd, Long> {
-    
+
     Optional<NLAd> findById(long id);
-    
-    Optional<NLAd> findByOfferId(long offerId);
-    
-    @Query(value = "SELECT * "
-                    + "FROM public.nlads "
-                    + "WHERE creator = ? "
-                    + "ORDER BY created_on desc "
-                    + "LIMIT ?", nativeQuery = true)
-    List<NLAd> findNewestByCreatorWithLimit(String creator, int limit);
-    
+
+    Optional<NLAd> findByOfferId(String offerId);
+
+    @Query(value = "SELECT offerid "
+            + "FROM (SELECT DISTINCT offerid, created_on "
+                + "FROM nlads n "
+                + "WHERE creator = ? "
+                + "ORDER BY created_on desc "
+                + "LIMIT ?"
+            + ") AS foo", nativeQuery = true)
+    List<String> findNewestOfferIdByCreatorWithLimit(String creator, int limit);
+
 }

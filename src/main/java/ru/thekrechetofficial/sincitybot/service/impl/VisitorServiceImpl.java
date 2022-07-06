@@ -28,7 +28,7 @@ public class VisitorServiceImpl implements VisitorService {
 
     @Override
     public void saveVisitor(Visitor visitor) {
-        repository.save(visitor);
+        repository.saveAndFlush(visitor);
     }
 
     @Override
@@ -40,6 +40,18 @@ public class VisitorServiceImpl implements VisitorService {
     public Visitor getVisitorByTelegramId(String id) {
         return repository.findByTelegramId(id).orElseThrow();
     }
+
+    @Override
+    public Visitor getFullVisitorByTelegramId(String id) {
+        
+        Visitor visitor = repository.findByTelegramId(id).orElseThrow();
+        visitor.getScoutQuery().getQueryOffers().size();
+        visitor.getSubscription().getRequests();
+        
+        return visitor;
+    }
+    
+    
     
     
 

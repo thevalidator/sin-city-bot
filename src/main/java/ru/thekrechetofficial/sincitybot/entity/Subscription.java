@@ -27,7 +27,6 @@ public class Subscription implements Serializable {
     public Subscription(SUBSCRIPTION_TYPE type) {
         this.type = type;
     }
-    
 
     public int getRequests() {
         return requests;

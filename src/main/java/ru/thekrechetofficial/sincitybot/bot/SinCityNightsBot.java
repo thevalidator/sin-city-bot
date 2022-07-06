@@ -81,7 +81,6 @@ public class SinCityNightsBot extends TelegramLongPollingBot {
             
             for (BotApiMethod m : messages) {
                 execute(m);
-                //execute(this)
             }
             
         } catch (TelegramApiException ex) {

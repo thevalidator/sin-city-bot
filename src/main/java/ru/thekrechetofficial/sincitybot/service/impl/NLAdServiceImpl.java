@@ -27,9 +27,16 @@ public class NLAdServiceImpl implements NLAdService {
     }
 
     @Override
-    public List<NLAd> getNewestByCreatorWithLimit(String creator, int limit) {
-            return repository.findNewestByCreatorWithLimit(creator, limit);
+    public List<String> getNewestOfferIdByCreatorWithLimit(String creator, int limit) {
+            return repository.findNewestOfferIdByCreatorWithLimit(creator, limit);
     }
+
+    @Override
+    public NLAd getAdByOfferId(String offerId) {
+        return repository.findByOfferId(offerId).orElseThrow();
+    }
+    
+    
     
 
 }

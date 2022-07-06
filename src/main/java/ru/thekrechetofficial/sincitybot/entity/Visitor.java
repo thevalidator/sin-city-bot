@@ -7,7 +7,6 @@ package ru.thekrechetofficial.sincitybot.entity;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -61,16 +60,25 @@ public class Visitor implements Serializable {
     public ScoutQuery getScoutQuery() {
         return scoutQuery;
     }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setTelegramId(String telegramId) {
+        this.telegramId = telegramId;
+    }
+
+    public void setJoinedStamp(LocalDateTime joinedStamp) {
+        this.joinedStamp = joinedStamp;
+    }
+
+    public void setSubscription(Subscription subscription) {
+        this.subscription = subscription;
+    }
+
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    // What if no setters (not needed here some of them) 
     
 
 }

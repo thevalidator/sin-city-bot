@@ -15,6 +15,8 @@ public interface VisitorService {
     
     Visitor getVisitorByTelegramId(String id);
     
+    Visitor getFullVisitorByTelegramId(String id);
+    
     boolean isExistByTelegramId(String id);
     
 }

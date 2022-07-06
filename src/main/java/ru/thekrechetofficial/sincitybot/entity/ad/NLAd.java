@@ -23,7 +23,7 @@ public class NLAd extends AbstractAd implements Serializable {
         super();
     }
 
-    public NLAd(String offerId, String title, String text, String place, String contact, LocalDateTime timestamp, GENDER creator) {
+    public NLAd(String offerId, String title, String text, String place, String contact, LocalDateTime timestamp, Gender creator) {
         super(offerId, title, text, place, contact, timestamp, creator);
     }
     

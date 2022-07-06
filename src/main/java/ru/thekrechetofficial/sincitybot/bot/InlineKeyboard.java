@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import ru.thekrechetofficial.sincitybot.entity.ad.GENDER;
+import ru.thekrechetofficial.sincitybot.entity.ad.Gender;
 
 /**
  * @author theValidator <the.validator@yandex.ru>
@@ -53,18 +53,18 @@ public class InlineKeyboard {
 
         InlineKeyboardButton btnM = new InlineKeyboardButton();
         btnM.setText("мужчин");
-        btnM.setCallbackData(GENDER.MALE.getOption());
+        btnM.setCallbackData(Gender.MALE.getOption());
         InlineKeyboardButton btnF = new InlineKeyboardButton();
         btnF.setText("женщин");
-        btnF.setCallbackData(GENDER.FEMALE.getOption());
+        btnF.setCallbackData(Gender.FEMALE.getOption());
         
        
         InlineKeyboardButton btnC = new InlineKeyboardButton();
         btnC.setText("пары");
-        btnC.setCallbackData(GENDER.COUPLE.getOption());
+        btnC.setCallbackData(Gender.COUPLE.getOption());
         InlineKeyboardButton btnT = new InlineKeyboardButton();
         btnT.setText("трансов");
-        btnT.setCallbackData(GENDER.TRANS.getOption());
+        btnT.setCallbackData(Gender.TRANS.getOption());
 
         firstRow.add(btnM);
         firstRow.add(btnF);
@@ -112,6 +112,29 @@ public class InlineKeyboard {
 
         return keyboard;
         
+    }
+
+    public static InlineKeyboardMarkup getAdsView(int number, String timestamp) {
+        
+        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        List<InlineKeyboardButton> firstRow = new ArrayList<>();
+        
+        InlineKeyboardButton btnCenter = new InlineKeyboardButton();
+        btnCenter.setText("1/" + number);
+        btnCenter.setCallbackData("0");
+        
+        InlineKeyboardButton btnNext = new InlineKeyboardButton();
+        btnNext.setText(">>");
+        btnNext.setCallbackData("1-" + number + "-" + timestamp);
+        
+           
+        firstRow.add(btnCenter);
+        firstRow.add(btnNext);
+        rows.add(firstRow);
+        keyboard.setKeyboard(rows);
+
+        return keyboard;
     }
 
 }
