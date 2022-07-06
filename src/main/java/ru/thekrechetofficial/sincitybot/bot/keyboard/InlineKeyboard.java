@@ -1,7 +1,7 @@
 /*
  * The Krechet Software
  */
-package ru.thekrechetofficial.sincitybot.bot;
+package ru.thekrechetofficial.sincitybot.bot.keyboard;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -55,7 +55,7 @@ public class SinCityNightsBot extends TelegramLongPollingBot {
             } else if (update.getMessage().hasText()) {
                 messages = messageHandler.textMessage(update);
             } else {
-                messages = List.of(new SendMessage(String.valueOf(update.getMessage().getChatId()), "UNDER CONSTRUCTION, SUKA BLYAT!"));
+                messages = List.of(new SendMessage(String.valueOf(update.getMessage().getChatId()), MESSAGE.NO_ANSWER.getMsg()));
             }
 
         } else if (update.hasCallbackQuery()) {

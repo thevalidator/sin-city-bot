@@ -54,13 +54,7 @@ public class VisitorServiceImpl implements VisitorService {
         return visitor;
     }
 
-//    @Override
-//    public String getVisitorsQueryStamp(String id) {
-//
-//        String queryStamp = repository.findQueryStampByTelegramId(id).orElseThrow();
-//
-//        return queryStamp;
-//    }
+
 
     @Override
     public Visitor getOptionalFullVisitorByTelegramId(String id) {
@@ -80,10 +74,39 @@ public class VisitorServiceImpl implements VisitorService {
         return visitor;
 
     }
+    
+    @Override
+    public Subscription getVisitorsSubscription(String visitorId) {
+        
+        Visitor v = repository.findByTelegramId(visitorId).orElseThrow();
+        Subscription s = v.getSubscription();
+        
+        return s;
+        
+    }
+    
+    @Override
+    public void updateRequests(int requestsNumber, String visitorId) {
+        repository.updateRequests(requestsNumber, visitorId);
+    }
+    
+    
 //
 //    @Override
 //    public Optional<String> getOptionalVisitorsQueryStamp(String id) {
 //        return repository.findQueryStampByTelegramId(id);
 //    }
+    
+    //    @Override
+//    public String getVisitorsQueryStamp(String id) {
+//
+//        String queryStamp = repository.findQueryStampByTelegramId(id).orElseThrow();
+//
+//        return queryStamp;
+//    }
+
+    
+
+    
 
 }

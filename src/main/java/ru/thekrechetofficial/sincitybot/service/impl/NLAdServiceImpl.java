@@ -35,6 +35,13 @@ public class NLAdServiceImpl implements NLAdService {
     public NLAd getAdById(String id) {
         return repository.findById(Long.valueOf(id)).orElseThrow();
     }
+
+    @Override
+    public long getAdsCountByContact(String text) {
+        
+        return repository.countAdsByContactInfo(text);
+        
+    }
     
     
     

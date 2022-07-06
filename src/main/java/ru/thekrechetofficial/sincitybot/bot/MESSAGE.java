@@ -37,7 +37,7 @@ public enum MESSAGE {
             ""), 
     INVALID("Данные устарели, начни заново");
 
-    String msg;
+    private final String msg;
 
     private MESSAGE(String msg) {
         this.msg = msg;

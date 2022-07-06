@@ -35,4 +35,11 @@ public interface NLAdRepository extends JpaRepository<NLAd, Long> {
                               + "LIMIT ?", nativeQuery = true)
     List<String> findNewestOfferIdByCreatorWithLimit(String creator, int limit);
 
+    
+    @Query(value = "SELECT COUNT(n.id) "
+                    + "FROM nlads n "
+                        + "WHERE contact "
+                          + "ILIKE ?", nativeQuery = true)
+    public long countAdsByContactInfo(String text);
+
 }

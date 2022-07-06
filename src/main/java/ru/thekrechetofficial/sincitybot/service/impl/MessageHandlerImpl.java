@@ -16,9 +16,9 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.thekrechetofficial.sincitybot.bot.COMMAND;
-import ru.thekrechetofficial.sincitybot.bot.InlineKeyboard;
+import ru.thekrechetofficial.sincitybot.bot.keyboard.InlineKeyboard;
 import ru.thekrechetofficial.sincitybot.bot.MESSAGE;
-import ru.thekrechetofficial.sincitybot.bot.ReplyKeyboard;
+import ru.thekrechetofficial.sincitybot.bot.keyboard.ReplyKeyboard;
 import ru.thekrechetofficial.sincitybot.entity.SUBSCRIPTION_TYPE;
 import ru.thekrechetofficial.sincitybot.entity.ScoutQuery;
 import ru.thekrechetofficial.sincitybot.entity.Subscription;
@@ -50,7 +50,7 @@ public class MessageHandlerImpl implements MessageHandler {
     public List<BotApiMethod> textMessage(Update update) {
 
         String incomeMsg = update.getMessage().getText();
-        String visitorId = String.valueOf(update.getMessage().getChatId());
+        String visitorId = String.valueOf(update.getMessage().getFrom().getId());
         List<BotApiMethod> response = new ArrayList<>();
 
         if (incomeMsg.startsWith("/")) {
@@ -82,7 +82,9 @@ public class MessageHandlerImpl implements MessageHandler {
             //toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());                          //TODO: probably not needed
             response.add(toVisitor);
         } else if (incomeMsg.equals(COMMAND.ACCOUNT.getCommand())) {
-            SendMessage toVisitor = new SendMessage(visitorId, "UNDER CONSTRUCTION, SUKA BLYAT!");
+            Subscription s = visitorService.getVisitorsSubscription(visitorId);
+            String message = String.format("КАБИНЕТ\n\n🔹 Тип подписки: %s\n🔹 Осталось запросов: %d\n\n", s.getType().getValue(), s.getRequests());
+            SendMessage toVisitor = new SendMessage(visitorId, message);
             //toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());                          //TODO: probably not needed
             response.add(toVisitor);
         } else if (incomeMsg.equals(COMMAND.SEARCH.getCommand())) {
@@ -102,8 +104,8 @@ public class MessageHandlerImpl implements MessageHandler {
 //            //toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
 //            response = List.of(toVisitor);
 
-            SendMessage toVisitor = new SendMessage(visitorId, "UNDER CONSTRUCTION, SUKA BLYAT!");
-            //toVisitor.setReplyMarkup(ReplyKeyboard.getSearchKeyboard());                        //TODO: probably not needed
+            SendMessage toVisitor = new SendMessage(visitorId, "Введи контактные данные");
+            toVisitor.setReplyMarkup(ReplyKeyboard.getReplyOnRequestKeyboard());
             response.add(toVisitor);
 
         }
@@ -120,7 +122,48 @@ public class MessageHandlerImpl implements MessageHandler {
 
     @Override
     public List<BotApiMethod> replyMessage(Update update) {
-        throw new UnsupportedOperationException("Not supported yet.");
+
+        String query = update.getMessage().getText().trim();
+        List<BotApiMethod> response = new ArrayList<>();
+        String visitorId = String.valueOf(update.getMessage().getFrom().getId());
+
+        Subscription s = visitorService.getVisitorsSubscription(visitorId);
+        int requestsLeft = s.getRequests();
+        if (requestsLeft > 0 || s.getType().equals(SUBSCRIPTION_TYPE.PREMIUM)) {
+
+            if (query.matches("[a-zA-Z0-9\\.!'@#$%&*()+\\/=?^_`{|}~\\s-]{4,40}")) {
+
+                long count = nlService.getAdsCountByContact("%" + query + "%");
+                SendMessage msg = new SendMessage(visitorId, "По данному контакту найдено " + count + " объявлений.");
+                msg.setReplyMarkup(ReplyKeyboard.getSearchKeyboard());
+                response.add(msg);
+                
+                if (s.getType().equals(SUBSCRIPTION_TYPE.STANDARD)) {
+                    visitorService.updateRequests(requestsLeft - 1, visitorId);
+                }
+
+                //return getSearchResultMsg(DBConnector.getConnection(), update, sb, query);
+            } else {
+
+                SendMessage msg = new SendMessage(visitorId, "Неверный формат введенных данных. Возможно,"
+                        + " вы ввели слишком короткий или длинный текст.");
+                msg.setReplyMarkup(ReplyKeyboard.getSearchKeyboard());
+                response.add(msg);
+//            logger.error("[USR] {} [SEARCH] {} (WRONG QUERY)",
+//                    update.getMessage().getFrom().getId(), query);
+//            return SendMsgBuilder.sendTextMessage(update, "Неверный формат введенных данных. Возможно,"
+//                    + " вы ввели слишком короткий текст. Ознакомьтесь с инструкцией по использованию.",
+//                    Keyboard.getMainKeyboard());
+            }
+
+        } else {
+            SendMessage msg = new SendMessage(visitorId, "ПОИСК НЕВОЗМОЖЕН\n\nВы истратили все свои запросы");
+            msg.setReplyMarkup(ReplyKeyboard.getSearchKeyboard());
+            response.add(msg);
+        }
+
+        return response;
+
     }
 
     @Override
@@ -150,9 +193,9 @@ public class MessageHandlerImpl implements MessageHandler {
             List<String> offerIds = nlService.getNewestOfferIdByCreatorWithLimit(
                     Gender.fromString(data[0]).toString(),
                     Integer.valueOf(data[1]));
-            
+
             Visitor visitor = visitorService.getOptionalFullVisitorByTelegramId(visitorId);
-            
+
             String timestamp = String.valueOf(System.currentTimeMillis());
             visitor.updateQueryData(offerIds, timestamp);
             //visitor.getScoutQuery().createQueryOffers(offerIds);
@@ -175,11 +218,11 @@ public class MessageHandlerImpl implements MessageHandler {
 
             int page = Integer.valueOf(data[0]);
             int pagesTotal = Integer.valueOf(data[1]);
-            
+
             EditMessageText msg = new EditMessageText();
             msg.setChatId(visitorId);
             msg.setMessageId(messageId);
-            
+
             //String actualQueryStamp = visitorService.getVisitorsQueryStamp(visitorId);
             Visitor visitor = visitorService.getOptionalFullVisitorByTelegramId(visitorId);
             String actualQueryStamp = visitor.getScoutQuery().getQueryStamp();
@@ -187,7 +230,7 @@ public class MessageHandlerImpl implements MessageHandler {
             if (!actualQueryStamp.equals(data[2])) {
                 msg.setText(MESSAGE.INVALID.getMsg());
             } else {
-                
+
                 //Visitor visitor = visitorService.getOptionalFullVisitorByTelegramId(visitorId);
                 List<String> queryOffers = visitor.getScoutQuery().getQueryOffers();
                 String offerToShow = queryOffers.get(page - 1);
@@ -195,7 +238,7 @@ public class MessageHandlerImpl implements MessageHandler {
 
                 msg.setText(ad.toString());
                 msg.setReplyMarkup(InlineKeyboard.getAdsView(page, pagesTotal, actualQueryStamp));
-                
+
             }
 
             response.add(msg);
@@ -209,15 +252,15 @@ public class MessageHandlerImpl implements MessageHandler {
 
             response.add(msg);
         } //else {
-          //  throw new IllegalArgumentException("Wrong data: " + option);
+        //  throw new IllegalArgumentException("Wrong data: " + option);
         //}
 
         if (!response.isEmpty()) {
             return response;
         }
-        
+
         throw new IllegalArgumentException("Wrong data: " + option);
-        
+
     }
 
     @Override
@@ -227,7 +270,7 @@ public class MessageHandlerImpl implements MessageHandler {
         answer.setText(text);
         return answer;
     }
-    
+
     private Visitor createVisitor(String visitorId) {
         Visitor newVisitor = new Visitor(visitorId, LocalDateTime.now(), new Subscription(SUBSCRIPTION_TYPE.STANDARD), new ScoutQuery());
         return newVisitor;

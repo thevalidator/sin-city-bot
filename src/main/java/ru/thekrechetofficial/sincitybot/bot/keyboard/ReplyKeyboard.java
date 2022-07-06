@@ -2,11 +2,13 @@
  * The Krechet Software
  */
 
-package ru.thekrechetofficial.sincitybot.bot;
+package ru.thekrechetofficial.sincitybot.bot.keyboard;
 
 import java.util.ArrayList;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import ru.thekrechetofficial.sincitybot.bot.COMMAND;
 
 /**
  * @author theValidator <the.validator@yandex.ru>
@@ -52,6 +54,14 @@ public class ReplyKeyboard {
         rows.add(firstRow);
         
         keyboard.setKeyboard(rows);
+
+        return keyboard;
+    }
+    
+    public static ForceReplyKeyboard getReplyOnRequestKeyboard() {
+        ForceReplyKeyboard keyboard = new ForceReplyKeyboard();
+        keyboard.setForceReply(true);
+        keyboard.setSelective(false);
 
         return keyboard;
     }
