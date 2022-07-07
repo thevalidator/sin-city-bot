@@ -3,6 +3,9 @@
  */
 package ru.thekrechetofficial.sincitybot.service.impl;
 
+import com.lowagie.text.Document;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +14,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.thekrechetofficial.sincitybot.bot.COMMAND;
@@ -28,6 +33,7 @@ import ru.thekrechetofficial.sincitybot.entity.ad.NLAd;
 import ru.thekrechetofficial.sincitybot.service.MessageHandler;
 import ru.thekrechetofficial.sincitybot.service.NLAdService;
 import ru.thekrechetofficial.sincitybot.service.VisitorService;
+import ru.thekrechetofficial.sincitybot.util.pdf.PDFCreator;
 
 /**
  * @author theValidator <the.validator@yandex.ru>
@@ -75,6 +81,14 @@ public class MessageHandlerImpl implements MessageHandler {
                     visitorService.saveVisitor(v);
                 }
 
+            } else if (incomeMsg.equals("/pdf")) {
+                String document = PDFCreator.createAdsPdf(List.of(nlService.getAdById("1")), sheriffId, 0);
+                SendDocument msg = new SendDocument(visitorId, new InputFile(new File(document)));
+                //msg.setChatId(visitorId);
+                
+                //response.add(e)
+                //doc.setDocument(document);
+                
             }
 
         } else if (incomeMsg.equals(COMMAND.HELP.getCommand())) {
@@ -88,15 +102,15 @@ public class MessageHandlerImpl implements MessageHandler {
             //toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());                          //TODO: probably not needed
             response.add(toVisitor);
         } else if (incomeMsg.equals(COMMAND.SEARCH.getCommand())) {
-            SendMessage toVisitor = new SendMessage(visitorId, "Выбери опцию ⤵️");
+            SendMessage toVisitor = new SendMessage(visitorId, MESSAGE.CHOOSE_OPTION.getMsg());
             toVisitor.setReplyMarkup(ReplyKeyboard.getSearchKeyboard());
             response.add(toVisitor);
         } else if (incomeMsg.equals(COMMAND.BACK.getCommand())) {
-            SendMessage toVisitor = new SendMessage(visitorId, "Главное меню");
+            SendMessage toVisitor = new SendMessage(visitorId, MESSAGE.MAIN_MENU.getMsg());
             toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
             response.add(toVisitor);
         } else if (incomeMsg.equals(COMMAND.SCOUT.getCommand())) {
-            SendMessage toVisitor = new SendMessage(visitorId, "Кого ищем?");
+            SendMessage toVisitor = new SendMessage(visitorId, MESSAGE.SEARCH_GENDER.getMsg());
             toVisitor.setReplyMarkup(InlineKeyboard.getGenderOptionForSearch());
             response.add(toVisitor);
         } else if (incomeMsg.equals(COMMAND.TARGET.getCommand())) {
@@ -104,7 +118,7 @@ public class MessageHandlerImpl implements MessageHandler {
 //            //toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
 //            response = List.of(toVisitor);
 
-            SendMessage toVisitor = new SendMessage(visitorId, "Введи контактные данные");
+            SendMessage toVisitor = new SendMessage(visitorId, MESSAGE.CONTACT_TARGET.getMsg());
             toVisitor.setReplyMarkup(ReplyKeyboard.getReplyOnRequestKeyboard());
             response.add(toVisitor);
 
@@ -134,7 +148,7 @@ public class MessageHandlerImpl implements MessageHandler {
             if (query.matches("[a-zA-Z0-9\\.!'@#$%&*()+\\/=?^_`{|}~\\s-]{4,40}")) {
 
                 long count = nlService.getAdsCountByContact("%" + query + "%");
-                SendMessage msg = new SendMessage(visitorId, "По данному контакту найдено " + count + " объявлений.");
+                SendMessage msg = new SendMessage(visitorId, MESSAGE.ADS_FOUND.getMsg() + count);
                 msg.setReplyMarkup(ReplyKeyboard.getSearchKeyboard());
                 response.add(msg);
                 
@@ -145,8 +159,7 @@ public class MessageHandlerImpl implements MessageHandler {
                 //return getSearchResultMsg(DBConnector.getConnection(), update, sb, query);
             } else {
 
-                SendMessage msg = new SendMessage(visitorId, "Неверный формат введенных данных. Возможно,"
-                        + " вы ввели слишком короткий или длинный текст.");
+                SendMessage msg = new SendMessage(visitorId, MESSAGE.INVALID_INPUT.getMsg());
                 msg.setReplyMarkup(ReplyKeyboard.getSearchKeyboard());
                 response.add(msg);
 //            logger.error("[USR] {} [SEARCH] {} (WRONG QUERY)",
@@ -157,7 +170,7 @@ public class MessageHandlerImpl implements MessageHandler {
             }
 
         } else {
-            SendMessage msg = new SendMessage(visitorId, "ПОИСК НЕВОЗМОЖЕН\n\nВы истратили все свои запросы");
+            SendMessage msg = new SendMessage(visitorId, MESSAGE.OUT_OF_REQUESTS.getMsg());
             msg.setReplyMarkup(ReplyKeyboard.getSearchKeyboard());
             response.add(msg);
         }
