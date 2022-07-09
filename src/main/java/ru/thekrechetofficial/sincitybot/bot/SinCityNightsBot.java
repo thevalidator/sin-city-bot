@@ -13,9 +13,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.thekrechetofficial.sincitybot.entity.ad.Gender;
@@ -53,41 +55,40 @@ public class SinCityNightsBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
 
-        List<BotApiMethod> messages = null;
-
         if (update.hasMessage()) {
 
             if (update.getMessage().isReply()) {
-                messages = messageHandler.replyMessage(update);
-            } else if (update.getMessage().hasText()) {
-                if (update.getMessage().getText().equals("/pdf")) {
-                    String id = String.valueOf(update.getMessage().getFrom().getId());
-                    NLAd ad = new NLAd("23423", "Test title", "test text", "Test Place", "test contact", LocalDateTime.now(), Gender.TRANS);
-                    String document = PDFCreator.createAdsPdf(List.of(ad), id, 0);
-                    SendDocument msg = new SendDocument(id, new InputFile(new File(document)));
-                    try {
-                        execute(msg);
-                    } catch (TelegramApiException ex) {
-                        Logger.getLogger(SinCityNightsBot.class.getName()).log(Level.SEVERE, null, ex);
+                try {
+                    
+                    PartialBotApiMethod<Message> response = messageHandler.replyMessage(update);
+                    
+                    if (response instanceof SendDocument) {
+                        execute((SendDocument) response);
+                    } else if (response instanceof SendMessage) {
+                        execute((SendMessage) response);
                     }
-                } else {
-                    messages = messageHandler.textMessage(update);
+                    
+                    
+//                    SendDocument document = messageHandler.generatePDFReport(update);
+//                    if (document != null) {
+//                        execute(document);
+//                    } else {
+//                        execute(new SendMessage(String.valueOf(update.getMessage().getChatId()), MESSAGE.NO_SUCH_CONTACT.getMsg()));
+//                    }
+                    //executeAll(messageHandler.replyMessage(update));
+                } catch (TelegramApiException ex) {
+                    Logger.getLogger(SinCityNightsBot.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
+            } else if (update.getMessage().hasText()) {
+                executeAll(messageHandler.textMessage(update));
             } else {
-                messages = List.of(new SendMessage(String.valueOf(update.getMessage().getChatId()), MESSAGE.NO_ANSWER.getMsg()));
+                executeOne(new SendMessage(String.valueOf(update.getMessage().getChatId()), MESSAGE.NO_ANSWER.getMsg()));
             }
 
         } else if (update.hasCallbackQuery()) {
             String id = update.getCallbackQuery().getId();
             executeOne(messageHandler.getAnswerCallbackQuery(id, "Обрабатывается"));
-            messages = messageHandler.callBackDataMessage(update);
-        }
-
-        if (messages != null) {
-            executeAll(messages);
-        } else {
-            System.out.println(update.toString());
+            executeAll(messageHandler.callBackDataMessage(update));
         }
 
     }
@@ -106,17 +107,13 @@ public class SinCityNightsBot extends TelegramLongPollingBot {
     }
 
     private void executeAll(List<BotApiMethod> messages) {
-
         try {
-
             for (BotApiMethod m : messages) {
                 execute(m);
             }
-
         } catch (TelegramApiException ex) {
             Logger.getLogger(SinCityNightsBot.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
 }

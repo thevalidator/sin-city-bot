@@ -42,7 +42,8 @@ public enum MESSAGE {
     CONTACT_TARGET("Введи контактные данные"),
     MAIN_MENU("Главное меню"),
     SEARCH_GENDER("Кого ищем?"),
-    CHOOSE_OPTION("Выбери опцию ⤵️");
+    CHOOSE_OPTION("Выбери опцию ⤵️"),
+    NO_SUCH_CONTACT("По данному запросу объявлений не найдено.");
 
     private final String msg;
 

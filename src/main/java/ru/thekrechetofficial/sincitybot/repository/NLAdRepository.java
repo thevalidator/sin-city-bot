@@ -20,21 +20,22 @@ public interface NLAdRepository extends JpaRepository<NLAd, Long> {
     Optional<NLAd> findById(long id);
 
     Optional<NLAd> findByOfferId(String offerId);
-
-//    @Query(value = "SELECT foo.offerid "
-//            + "FROM (SELECT DISTINCT offerid, created_on "
-//                + "FROM nlads n "
-//                + "WHERE creator = ? "
-//                + "ORDER BY created_on desc "
-//                + "LIMIT ?"
-//            + ") AS foo", nativeQuery = true)
+    
+    //SELECT * FROM nlads where contact ilike '%kAlinka%' order by created_on desc limit 10;
+    
+    @Query(value = "SELECT n.* "
+                    + "FROM nlads n "
+                        + "WHERE n.contact ilike ? "
+                            + "ORDER BY n.created_on desc "
+                              + "LIMIT ?", nativeQuery = true)
+    List<NLAd> findTop10ByContactLike(String contact, int limit);
+    
     @Query(value = "SELECT n.id "
                     + "FROM nlads n "
-                        + "WHERE creator = ? "
-                            + "ORDER BY created_on desc "
+                        + "WHERE n.creator = ? "
+                            + "ORDER BY n.created_on desc "
                               + "LIMIT ?", nativeQuery = true)
     List<String> findNewestOfferIdByCreatorWithLimit(String creator, int limit);
-
     
     @Query(value = "SELECT COUNT(n.id) "
                     + "FROM nlads n "

@@ -38,12 +38,13 @@ public class NLAdServiceImpl implements NLAdService {
 
     @Override
     public long getAdsCountByContact(String text) {
-        
         return repository.countAdsByContactInfo(text);
-        
     }
-    
-    
+
+    @Override
+    public List<NLAd> getAdsForPDFReport(String contact) {
+        return repository.findTop10ByContactLike(contact, 10);
+    }
     
 
 }

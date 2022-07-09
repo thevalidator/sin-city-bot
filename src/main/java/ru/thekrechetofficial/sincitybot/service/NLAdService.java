@@ -14,8 +14,10 @@ public interface NLAdService {
     
     List<String> getNewestOfferIdByCreatorWithLimit(String creator, int limit);
 
-    public NLAd getAdById(String id);
+    NLAd getAdById(String id);
 
-    public long getAdsCountByContact(String text);
+    long getAdsCountByContact(String text);
+    
+    List<NLAd> getAdsForPDFReport(String contact);
     
 }

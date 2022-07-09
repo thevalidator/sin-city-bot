@@ -19,6 +19,7 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
 import java.awt.Color;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,18 +34,22 @@ import ru.thekrechetofficial.sincitybot.entity.ad.AbstractAd;
  */
 public class PDFCreator {
     
-    public static String createAdsPdf(List<AbstractAd> adsList, String query, long userId) {
+    //public static String createAdsPdf(List<? extends AbstractAd> adsList, String query, String userId, long total) {
+    public static ByteArrayOutputStream createAdsPdf(List<? extends AbstractAd> adsList, String query, String userId, long total) {
 
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        
+        
         //595 pageWidth
         //580 tableWidth /2= 290
         String fileName = null;
         Rectangle rectangle = new Rectangle(PageSize.A4);
         try (Document document = new Document(rectangle, 10f,10f,30,30)) {
             
-            fileName = userId + "_" +
-                    LocalTime.now().format(DateTimeFormatter.ofPattern("HHmmss")) + ".pdf";
+            fileName = userId + ".pdf";
+            
 
-            final PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(fileName));
+            final PdfWriter writer = PdfWriter.getInstance(document, outputStream);   //new FileOutputStream(fileName)
             document.open();
             BackgroundHandler handler = new BackgroundHandler("src" + File.separator + "main" + File.separator + "resources" + File.separator + "bck.jpg");
             writer.setPageEvent(handler);
@@ -79,7 +84,7 @@ public class PDFCreator {
             template1.setFontAndSize(baseFont, 14.f);
             template1.setTextMatrix(0,0);
             template1.setTextRise(3.f);
-            template1.showText("Найдено объявлений: " + adsList.size());
+            template1.showText("Показано/найдено объявлений: " + adsList.size() + "/" + total);
             template1.endText();
             template1.fill();
             template1.sanityCheck();
@@ -88,8 +93,8 @@ public class PDFCreator {
             template1.setFontAndSize(baseFont, 10.f);
             template1.setTextMatrix(80,50);
             template1.setTextRise(3.f);
-            template1.showText("Отчет сгенерирован в " +
-                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm (dd-MM-yyyy)")) +
+            template1.showText("[" + userId + "] Отчет сгенерирован в " +
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy в HH:mm")) +
                     " телеграм ботом @sincitynights_bot");
             template1.endText();
             template1.fill();
@@ -185,11 +190,12 @@ public class PDFCreator {
 
             }
 
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return fileName;
+        
+        //return fileName;
+        return outputStream;
     }
 
 }
