@@ -3,8 +3,6 @@
  */
 package ru.thekrechetofficial.sincitybot.bot;
 
-import java.io.File;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,14 +14,10 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import ru.thekrechetofficial.sincitybot.entity.ad.Gender;
-import ru.thekrechetofficial.sincitybot.entity.ad.NLAd;
 import ru.thekrechetofficial.sincitybot.service.MessageHandler;
-import ru.thekrechetofficial.sincitybot.util.pdf.PDFCreator;
 
 /**
  * @author theValidator <the.validator@yandex.ru>
@@ -68,14 +62,6 @@ public class SinCityNightsBot extends TelegramLongPollingBot {
                         execute((SendMessage) response);
                     }
                     
-                    
-//                    SendDocument document = messageHandler.generatePDFReport(update);
-//                    if (document != null) {
-//                        execute(document);
-//                    } else {
-//                        execute(new SendMessage(String.valueOf(update.getMessage().getChatId()), MESSAGE.NO_SUCH_CONTACT.getMsg()));
-//                    }
-                    //executeAll(messageHandler.replyMessage(update));
                 } catch (TelegramApiException ex) {
                     Logger.getLogger(SinCityNightsBot.class.getName()).log(Level.SEVERE, null, ex);
                 }

@@ -26,6 +26,14 @@ public interface VisitorRepository extends JpaRepository<Visitor, Long> {
                     + "SET requests=? "
                      + "WHERE telegram_id=?", nativeQuery = true)
     public void updateRequests(int requestsNumber, String visitorId);
+    
+    @Modifying
+    @Query(value = "UPDATE visitor "
+                    + "SET requests=requests + ? "
+                     + "WHERE telegram_id=?", nativeQuery = true)
+    public void addRequests(int requestsNumber, String visitorId);
+    
+    
 
 //    @Query(value = "SELECT v.query_stamp "
 //                    + "FROM visitor v "

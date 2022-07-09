@@ -3,16 +3,13 @@
  */
 package ru.thekrechetofficial.sincitybot.service.impl;
 
-import com.lowagie.text.Document;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -34,7 +31,6 @@ import ru.thekrechetofficial.sincitybot.entity.SUBSCRIPTION_TYPE;
 import ru.thekrechetofficial.sincitybot.entity.ScoutQuery;
 import ru.thekrechetofficial.sincitybot.entity.Subscription;
 import ru.thekrechetofficial.sincitybot.entity.Visitor;
-import ru.thekrechetofficial.sincitybot.entity.ad.AbstractAd;
 import ru.thekrechetofficial.sincitybot.entity.ad.Gender;
 import ru.thekrechetofficial.sincitybot.entity.ad.NLAd;
 import ru.thekrechetofficial.sincitybot.service.MessageHandler;
@@ -52,6 +48,7 @@ public class MessageHandlerImpl implements MessageHandler {
     private String sheriffId;
     private final NLAdService nlService;
     private final VisitorService visitorService;
+    private static final Logger LOGGER = LogManager.getLogger(MessageHandlerImpl.class.getName());
 
     @Autowired
     public MessageHandlerImpl(NLAdService nlService, VisitorService visitorService, @Value("${telegram.sheriff.id}") String sheriffId) {
@@ -86,16 +83,30 @@ public class MessageHandlerImpl implements MessageHandler {
                     response.add(toSheriff);
                     Visitor v = createVisitor(visitorId);
                     visitorService.saveVisitor(v);
+                    LOGGER.info("new user: {}", visitorId);
                 }
 
-            } //else if (incomeMsg.equals("/pdf")) {
-//                String document = PDFCreator.createAdsPdf(List.of(nlService.getAdById("1")), sheriffId, 0);
-//                SendDocument msg = new SendDocument(visitorId, new InputFile(new File(document)));
-//                //msg.setChatId(visitorId);
-//
-//                //response.add(e)
-//                //doc.setDocument(document);
-//            }
+            } else if (incomeMsg.equals(COMMAND.ID.getCommand())) {
+                SendMessage toVisitor = new SendMessage(visitorId, visitorId);
+                toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());                      //TODO: probably not needed
+                response.add(toVisitor);
+            } else if (incomeMsg.matches(COMMAND.ADD_QUERIES.getCommand())) {
+                
+                if (visitorId.equals(sheriffId)) {
+                    int splitIndex = incomeMsg.lastIndexOf(" ");
+                    String queryNumber = incomeMsg.substring(5, splitIndex);
+                    String id = incomeMsg.substring(splitIndex + 1);
+                    
+                    visitorService.addRequests(Integer.valueOf(queryNumber), id);
+
+                    SendMessage toVisitor = new SendMessage();
+                    toVisitor.setChatId(visitorId);
+                    toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
+                    toVisitor.setText("success: <" + queryNumber + "> <" + id + ">");
+                    response.add(toVisitor);
+                }
+
+            }
 
         } else if (incomeMsg.equals(COMMAND.HELP.getCommand())) {
             SendMessage toVisitor = new SendMessage(visitorId, MESSAGE.HELP.getMsg());
@@ -130,6 +141,7 @@ public class MessageHandlerImpl implements MessageHandler {
             SendMessage toVisitor = new SendMessage(visitorId, MESSAGE.NO_ANSWER.getMsg());
             toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
             response.add(toVisitor);
+            LOGGER.info("\tmsg: {}", incomeMsg);
         }
 
         return response;
@@ -156,17 +168,12 @@ public class MessageHandlerImpl implements MessageHandler {
                 if (totalFound > 0) {
 
                     List<NLAd> queryAds = nlService.getAdsForPDFReport(query);
-
-                    //String fileName = PDFCreator.createAdsPdf(queryAds, queryValue, visitorId, totalFound);
-                    
-                    
-                    //
                     ByteArrayOutputStream outputStream = PDFCreator.createAdsPdf(queryAds, queryValue, visitorId, totalFound);
-                    ByteArrayInputStream inputstream = new ByteArrayInputStream(outputStream.toByteArray());                    
-                    
-                    //
+                    ByteArrayInputStream inputstream = new ByteArrayInputStream(outputStream.toByteArray());
 
-                    SendDocument document = new SendDocument(visitorId, new InputFile(inputstream, visitorId + "_" + System.currentTimeMillis() + ".pdf"));
+                    //
+                    SendDocument document = new SendDocument(visitorId, new InputFile(inputstream, visitorId + "_"
+                            + System.currentTimeMillis() + ".pdf"));
                     document.setReplyMarkup(ReplyKeyboard.getSearchKeyboard());
 
                     response = document;
@@ -314,7 +321,6 @@ public class MessageHandlerImpl implements MessageHandler {
 //            response.setReplyMarkup(ReplyKeyboard.getSearchKeyboard());
 //
 //        }
-
         return response;
 
     }

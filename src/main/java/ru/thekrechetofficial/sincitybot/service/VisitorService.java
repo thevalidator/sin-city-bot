@@ -15,6 +15,8 @@ public interface VisitorService {
 
     void updateRequests(int requestsNumber, String visitorId);
     
+    void addRequests(int requestsNumber, String visitorId);
+    
     void saveVisitor(Visitor visitor);
 
     boolean isExistByTelegramId(String id);

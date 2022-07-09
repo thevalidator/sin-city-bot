@@ -21,10 +21,8 @@ import com.lowagie.text.pdf.PdfWriter;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import ru.thekrechetofficial.sincitybot.entity.ad.AbstractAd;
@@ -34,7 +32,6 @@ import ru.thekrechetofficial.sincitybot.entity.ad.AbstractAd;
  */
 public class PDFCreator {
     
-    //public static String createAdsPdf(List<? extends AbstractAd> adsList, String query, String userId, long total) {
     public static ByteArrayOutputStream createAdsPdf(List<? extends AbstractAd> adsList, String query, String userId, long total) {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -42,16 +39,13 @@ public class PDFCreator {
         
         //595 pageWidth
         //580 tableWidth /2= 290
-        String fileName = null;
         Rectangle rectangle = new Rectangle(PageSize.A4);
         try (Document document = new Document(rectangle, 10f,10f,30,30)) {
             
-            fileName = userId + ".pdf";
-            
-
-            final PdfWriter writer = PdfWriter.getInstance(document, outputStream);   //new FileOutputStream(fileName)
+            final PdfWriter writer = PdfWriter.getInstance(document, outputStream);
             document.open();
-            BackgroundHandler handler = new BackgroundHandler("src" + File.separator + "main" + File.separator + "resources" + File.separator + "bck.jpg");
+            String background = "src" + File.separator + "main" + File.separator + "resources" + File.separator + "bck.jpg";
+            BackgroundHandler handler = new BackgroundHandler(background);
             writer.setPageEvent(handler);
 
             document.open();
@@ -194,7 +188,6 @@ public class PDFCreator {
             e.printStackTrace();
         }
         
-        //return fileName;
         return outputStream;
     }
 

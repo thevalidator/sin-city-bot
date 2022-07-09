@@ -7,7 +7,6 @@ import java.util.List;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -24,7 +23,5 @@ public interface MessageHandler {
     List<BotApiMethod> callBackDataMessage(Update update);
     
     AnswerCallbackQuery getAnswerCallbackQuery(String id, String text);
-    
-    //SendDocument generatePDFReport(Update update);
     
 }

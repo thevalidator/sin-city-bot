@@ -15,7 +15,9 @@ public enum COMMAND {
     SCOUT("🕵🏼 Разведка"),
     TARGET("🎯 Розыск"),
     BACK("Назад"),
-    HELP("📖 Помощь"); 
+    HELP("📖 Помощь"),
+    ID("/id"),
+    ADD_QUERIES("/add [0-9]{1,2} [0-9]+"); 
     
 
     private final String command;

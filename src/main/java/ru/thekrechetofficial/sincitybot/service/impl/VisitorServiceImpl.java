@@ -90,6 +90,11 @@ public class VisitorServiceImpl implements VisitorService {
         repository.updateRequests(requestsNumber, visitorId);
     }
     
+    @Override
+    public void addRequests(int requestsNumber, String visitorId) {
+        repository.addRequests(requestsNumber, visitorId);
+    }
+    
     
 //
 //    @Override
@@ -104,6 +109,8 @@ public class VisitorServiceImpl implements VisitorService {
 //
 //        return queryStamp;
 //    }
+
+    
 
     
 
