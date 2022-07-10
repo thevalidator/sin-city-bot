@@ -12,23 +12,23 @@ import com.lowagie.text.pdf.PdfGState;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.events.PdfPageEventForwarder;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author theValidator <the.validator@yandex.ru>
  */
 public class BackgroundHandler extends PdfPageEventForwarder {
     
-    Image label;
+    private static final Logger LOGGER = LogManager.getLogger(BackgroundHandler.class.getName());
+    private Image label;
 
     public BackgroundHandler() {
         
         try {
             label = Image.getInstance("classpath:bck.jpg");
         } catch (BadElementException | IOException ex) {
-            //TODO: log4j2
-            Logger.getLogger(BackgroundHandler.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.error("error found: {}", ex.getMessage());
         }
         
     }

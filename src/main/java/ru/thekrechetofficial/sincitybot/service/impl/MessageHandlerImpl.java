@@ -196,7 +196,7 @@ public class MessageHandlerImpl implements MessageHandler {
             SendMessage toVisitor = new SendMessage(visitorId, MESSAGE.NO_ANSWER.getMsg());
             toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
             response.add(toVisitor);
-            LOGGER.info("\tmsg: {}", incomeMsg);
+            LOGGER.info("\tmsg from {}: {}", visitorId, incomeMsg);
         }
 
         return response;
@@ -238,6 +238,8 @@ public class MessageHandlerImpl implements MessageHandler {
 
             msg.setText(ad.toString());
             msg.setReplyMarkup(InlineKeyboard.getAdsView(1, offerIds.size(), timestamp));
+            
+            LOGGER.info("\tSRCH {}: {}", visitorId, option);
 
             //response.add(msg);
 
@@ -288,6 +290,8 @@ public class MessageHandlerImpl implements MessageHandler {
             document.setReplyMarkup(ReplyKeyboard.getSearchKeyboard());
             
             response.add(document);
+            
+            LOGGER.info("\tPDF {}: {}", visitorId, queryValue);
 
         }
         
