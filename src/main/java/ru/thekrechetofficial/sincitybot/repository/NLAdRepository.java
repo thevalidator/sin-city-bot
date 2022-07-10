@@ -28,7 +28,7 @@ public interface NLAdRepository extends JpaRepository<NLAd, Long> {
                         + "WHERE n.contact ilike ? "
                             + "ORDER BY n.created_on desc "
                               + "LIMIT ?", nativeQuery = true)
-    List<NLAd> findTop10ByContactLike(String contact, int limit);
+    List<NLAd> findByContactLikeWithLimit(String contact, int limit);
     
     @Query(value = "SELECT n.id "
                     + "FROM nlads n "

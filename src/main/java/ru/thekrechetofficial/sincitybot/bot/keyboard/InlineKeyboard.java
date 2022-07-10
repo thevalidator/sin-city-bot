@@ -142,5 +142,21 @@ public class InlineKeyboard {
 
         return keyboard;
     }
+    
+    public static InlineKeyboardMarkup getDownloadAdsKeyboard(String query) {
+        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        List<InlineKeyboardButton> firstRow = new ArrayList<>();
+
+        InlineKeyboardButton btnOne = new InlineKeyboardButton();
+        btnOne.setText("Скачать PDF");
+        btnOne.setCallbackData("PDF " + query);
+
+        firstRow.add(btnOne);
+        rows.add(firstRow);
+        keyboard.setKeyboard(rows);
+
+        return keyboard;
+    }
 
 }

@@ -22,13 +22,12 @@ public class BackgroundHandler extends PdfPageEventForwarder {
     
     Image label;
 
-    public BackgroundHandler(String path) {
+    public BackgroundHandler() {
         
         try {
-            
-            label = Image.getInstance(path);
-            
+            label = Image.getInstance("classpath:bck.jpg");
         } catch (BadElementException | IOException ex) {
+            //TODO: log4j2
             Logger.getLogger(BackgroundHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
         

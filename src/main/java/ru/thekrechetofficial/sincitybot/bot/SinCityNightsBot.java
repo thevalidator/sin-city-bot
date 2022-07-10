@@ -3,6 +3,7 @@
  */
 package ru.thekrechetofficial.sincitybot.bot;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,7 +15,7 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.thekrechetofficial.sincitybot.service.MessageHandler;
@@ -51,30 +52,18 @@ public class SinCityNightsBot extends TelegramLongPollingBot {
 
         if (update.hasMessage()) {
 
-            if (update.getMessage().isReply()) {
-                try {
-                    
-                    PartialBotApiMethod<Message> response = messageHandler.replyMessage(update);
-                    
-                    if (response instanceof SendDocument) {
-                        execute((SendDocument) response);
-                    } else if (response instanceof SendMessage) {
-                        execute((SendMessage) response);
-                    }
-                    
-                } catch (TelegramApiException ex) {
-                    Logger.getLogger(SinCityNightsBot.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } else if (update.getMessage().hasText()) {
+            if (update.getMessage().hasText()) {
                 executeAll(messageHandler.textMessage(update));
             } else {
                 executeOne(new SendMessage(String.valueOf(update.getMessage().getChatId()), MESSAGE.NO_ANSWER.getMsg()));
             }
 
         } else if (update.hasCallbackQuery()) {
+            
             String id = update.getCallbackQuery().getId();
             executeOne(messageHandler.getAnswerCallbackQuery(id, "Обрабатывается"));
-            executeAll(messageHandler.callBackDataMessage(update));
+            executeAllAbstract(messageHandler.callBackDataMessage(update));
+            
         }
 
     }
@@ -92,10 +81,24 @@ public class SinCityNightsBot extends TelegramLongPollingBot {
         }
     }
 
-    private void executeAll(List<BotApiMethod> messages) {
+    private void executeAll(List<BotApiMethod<? extends Serializable>> messages) {
         try {
             for (BotApiMethod m : messages) {
                 execute(m);
+            }
+        } catch (TelegramApiException ex) {
+            Logger.getLogger(SinCityNightsBot.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void executeAllAbstract(List<PartialBotApiMethod<? extends Serializable>> messages) {
+        try {
+            for (PartialBotApiMethod response : messages) {
+                if (response instanceof EditMessageText) {
+                    execute((EditMessageText) response);
+                } else if (response instanceof SendDocument) {
+                    execute((SendDocument) response);
+                }
             }
         } catch (TelegramApiException ex) {
             Logger.getLogger(SinCityNightsBot.class.getName()).log(Level.SEVERE, null, ex);

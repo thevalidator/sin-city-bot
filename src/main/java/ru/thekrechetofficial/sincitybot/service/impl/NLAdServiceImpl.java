@@ -43,7 +43,7 @@ public class NLAdServiceImpl implements NLAdService {
 
     @Override
     public List<NLAd> getAdsForPDFReport(String contact) {
-        return repository.findTop10ByContactLike(contact, 10);
+        return repository.findByContactLikeWithLimit(contact, 20);
     }
     
 

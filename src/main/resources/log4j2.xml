@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+    
+    <Properties>
+        <Property name="LOG_PATTERN">
+            %d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${hostName} --- [%15.15t] %-40.40c{1.} : %m%n%ex
+        </Property>
+        <Property name="logsdir">
+            ${sys:catalina.base}/logs/scn/bot
+        </Property>
+    </Properties>
+    
+    
+    <Appenders>
+        <Console name="ConsoleAppender" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+        
+        <RollingFile name="rollingBotData" fileName="${logsdir}/bot_data.log"
+                     filePattern="${logsdir}/$${date:yyyy-MM}/bot_data-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+            </PatternLayout>
+            <CronTriggeringPolicy schedule="0 0 0 * * ?"/>
+        </RollingFile>
+        
+        <File name="errors" fileName="${logsdir}/bot_errors.log" append="true">
+            <PatternLayout pattern="%d{yyyy-MM-dd EEE HH:mm:ss} - %msg%n"/>
+        </File>
+        <!--<File name="handler" fileName="${logsdir}/handler.log" append="true">
+            <PatternLayout pattern="%d{yyyy-MM-dd EEE HH:mm:ss} - %msg%n"/>
+        </File>-->
+    </Appenders>
+    
+    
+    <Loggers>
+        <Logger name="ru.thekrechetofficial.sincitybot.service.impl" level="info" additivity="false">
+            <AppenderRef ref="rollingBotData"/>
+        </Logger>
+
+        <Root level="error">
+            <AppenderRef ref="ConsoleAppender"/>
+        </Root>
+    </Loggers>
+    
+</Configuration>

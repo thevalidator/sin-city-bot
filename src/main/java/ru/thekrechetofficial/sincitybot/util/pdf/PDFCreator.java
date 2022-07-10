@@ -20,7 +20,6 @@ import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -44,8 +43,7 @@ public class PDFCreator {
             
             final PdfWriter writer = PdfWriter.getInstance(document, outputStream);
             document.open();
-            String background = "src" + File.separator + "main" + File.separator + "resources" + File.separator + "bck.jpg";
-            BackgroundHandler handler = new BackgroundHandler(background);
+            BackgroundHandler handler = new BackgroundHandler();
             writer.setPageEvent(handler);
 
             document.open();

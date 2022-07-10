@@ -43,7 +43,8 @@ public enum MESSAGE {
     MAIN_MENU("Главное меню"),
     SEARCH_GENDER("Кого ищем?"),
     CHOOSE_OPTION("Выбери опцию ⤵️"),
-    NO_SUCH_CONTACT("По данному запросу объявлений не найдено.");
+    NO_SUCH_CONTACT("По данному запросу объявлений не найдено."),
+    REQUESTS_LEFT("Запросов осталось: ");
 
     private final String msg;
 
