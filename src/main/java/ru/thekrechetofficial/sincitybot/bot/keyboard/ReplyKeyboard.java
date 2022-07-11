@@ -25,38 +25,42 @@ public class ReplyKeyboard {
         ArrayList<KeyboardRow> rows = new ArrayList<>();
         
         KeyboardRow firstRow = new KeyboardRow();
-        firstRow.add(COMMAND.SEARCH.getCommand());
-        firstRow.add(COMMAND.ACCOUNT.getCommand());
-        firstRow.add(COMMAND.HELP.getCommand());
-        
-        rows.add(firstRow);
-        
-        keyboard.setKeyboard(rows);
-
-        return keyboard;
-    }
-    
-    
-    public static ReplyKeyboardMarkup getSearchKeyboard() {
-        
-        ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
-        keyboard.setSelective(true);
-        keyboard.setResizeKeyboard(true);
-        //keyboard.setOneTimeKeyboard(true);
-        
-        ArrayList<KeyboardRow> rows = new ArrayList<>();
-        
-        KeyboardRow firstRow = new KeyboardRow();
         firstRow.add(COMMAND.SCOUT.getCommand());
         firstRow.add(COMMAND.TARGET.getCommand());
-        firstRow.add(COMMAND.BACK.getCommand());
+        
+        KeyboardRow secondRow = new KeyboardRow();
+        secondRow.add(COMMAND.ACCOUNT.getCommand());
+        secondRow.add(COMMAND.HELP.getCommand());
         
         rows.add(firstRow);
+        rows.add(secondRow);
         
         keyboard.setKeyboard(rows);
 
         return keyboard;
     }
+    
+    
+//    public static ReplyKeyboardMarkup getSearchKeyboard() {
+//        
+//        ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
+//        keyboard.setSelective(true);
+//        keyboard.setResizeKeyboard(true);
+//        //keyboard.setOneTimeKeyboard(true);
+//        
+//        ArrayList<KeyboardRow> rows = new ArrayList<>();
+//        
+//        KeyboardRow firstRow = new KeyboardRow();
+//        firstRow.add(COMMAND.SCOUT.getCommand());
+//        firstRow.add(COMMAND.TARGET.getCommand());
+//        firstRow.add(COMMAND.BACK.getCommand());
+//        
+//        rows.add(firstRow);
+//        
+//        keyboard.setKeyboard(rows);
+//
+//        return keyboard;
+//    }
     
     public static ForceReplyKeyboard getReplyOnRequestKeyboard() {
         ForceReplyKeyboard keyboard = new ForceReplyKeyboard();

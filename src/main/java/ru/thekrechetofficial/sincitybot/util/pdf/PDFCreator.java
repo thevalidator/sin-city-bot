@@ -50,7 +50,7 @@ public class PDFCreator {
             document.addAuthor("Sin City Nights");
             document.addCreationDate();
             document.addCreator("@sincitynights_bot");
-            document.addTitle("Объявления");
+            document.addTitle("Объявления для " + userId);
             document.addSubject("Выборка объявлений по запросу");
 
             BaseFont baseFont = BaseFont.createFont("NotoSans-Regular.ttf",

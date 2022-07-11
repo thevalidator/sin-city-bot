@@ -10,12 +10,12 @@ package ru.thekrechetofficial.sincitybot.bot;
 public enum COMMAND {
 
     START("/start"),
-    SEARCH("🔍 Поиск"),
+    //SEARCH("🔍 Поиск"),
     ACCOUNT("🔐 Кабинет"),
-    SCOUT("Объявления"),
+    SCOUT("💃 Объявления"),
     TARGET("🎯 Розыск"),
     BACK("Назад"),
-    HELP("📖 Помощь"),
+    HELP("📖 Инфо"),
     ID("/id"),
     ADD_QUERIES("/add [0-9]{1,2} [0-9]+"); 
     

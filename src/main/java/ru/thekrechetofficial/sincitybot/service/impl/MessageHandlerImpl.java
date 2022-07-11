@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -91,21 +92,21 @@ public class MessageHandlerImpl implements MessageHandler {
 
                     } else {
                         SendMessage msg = new SendMessage(visitorId, MESSAGE.NO_SUCH_CONTACT.getMsg());
-                        msg.setReplyMarkup(ReplyKeyboard.getSearchKeyboard());
+                        msg.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
                         response.add(msg);
                     }
                     
                 } else {
 
                     SendMessage msg = new SendMessage(visitorId, MESSAGE.INVALID_INPUT.getMsg());
-                    msg.setReplyMarkup(ReplyKeyboard.getSearchKeyboard());
+                    msg.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
                     response.add(msg);
 
                 }
 
             } else {
                 SendMessage msg = new SendMessage(visitorId, MESSAGE.OUT_OF_REQUESTS.getMsg());
-                msg.setReplyMarkup(ReplyKeyboard.getSearchKeyboard());
+                msg.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
                 response.add(msg);
             }
 
@@ -157,6 +158,7 @@ public class MessageHandlerImpl implements MessageHandler {
 
         } else if (incomeMsg.equals(COMMAND.HELP.getCommand())) {
             SendMessage toVisitor = new SendMessage(visitorId, MESSAGE.HELP.getMsg());
+            toVisitor.setParseMode(ParseMode.HTML);
             //toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());                          //TODO: probably not needed
             response.add(toVisitor);
         } else if (incomeMsg.equals(COMMAND.ACCOUNT.getCommand())) {
@@ -166,10 +168,10 @@ public class MessageHandlerImpl implements MessageHandler {
             SendMessage toVisitor = new SendMessage(visitorId, message);
             //toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());                          //TODO: probably not needed
             response.add(toVisitor);
-        } else if (incomeMsg.equals(COMMAND.SEARCH.getCommand())) {
-            SendMessage toVisitor = new SendMessage(visitorId, MESSAGE.CHOOSE_OPTION.getMsg());
-            toVisitor.setReplyMarkup(ReplyKeyboard.getSearchKeyboard());
-            response.add(toVisitor);
+//        } else if (incomeMsg.equals(COMMAND.SEARCH.getCommand())) {
+//            SendMessage toVisitor = new SendMessage(visitorId, MESSAGE.CHOOSE_OPTION.getMsg());
+//            toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
+//            response.add(toVisitor);
         } else if (incomeMsg.equals(COMMAND.BACK.getCommand())) {
             SendMessage toVisitor = new SendMessage(visitorId, MESSAGE.MAIN_MENU.getMsg());
             toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
@@ -287,7 +289,7 @@ public class MessageHandlerImpl implements MessageHandler {
             //
             SendDocument document = new SendDocument(visitorId, new InputFile(inputstream, visitorId + "_"
                     + System.currentTimeMillis() + ".pdf"));
-            document.setReplyMarkup(ReplyKeyboard.getSearchKeyboard());
+            document.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
             
             response.add(document);
             
