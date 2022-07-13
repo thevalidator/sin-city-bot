@@ -81,10 +81,10 @@ public class InlineKeyboard {
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
         List<InlineKeyboardButton> firstRow = new ArrayList<>();
 
-        String btnOneText = "1";
-        String btnTwoText = "5";
-        String btnThreeText = "10";
-        String btnFourText = "15";
+        String btnOneText = "5";
+        String btnTwoText = "10";
+        String btnThreeText = "15";
+        String btnFourText = "20";
 
         InlineKeyboardButton btnOne = new InlineKeyboardButton();
         btnOne.setText(btnOneText);

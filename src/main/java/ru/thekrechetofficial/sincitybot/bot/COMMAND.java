@@ -10,7 +10,6 @@ package ru.thekrechetofficial.sincitybot.bot;
 public enum COMMAND {
 
     START("/start"),
-    //SEARCH("🔍 Поиск"),
     ACCOUNT("🔐 Кабинет"),
     SCOUT("💃 Объявления"),
     TARGET("🎯 Розыск"),

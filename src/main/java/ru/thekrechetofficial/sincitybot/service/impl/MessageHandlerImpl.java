@@ -168,15 +168,7 @@ public class MessageHandlerImpl implements MessageHandler {
             SendMessage toVisitor = new SendMessage(visitorId, message);
             //toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());                          //TODO: probably not needed
             response.add(toVisitor);
-//        } else if (incomeMsg.equals(COMMAND.SEARCH.getCommand())) {
-//            SendMessage toVisitor = new SendMessage(visitorId, MESSAGE.CHOOSE_OPTION.getMsg());
-//            toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
-//            response.add(toVisitor);
-        } else if (incomeMsg.equals(COMMAND.BACK.getCommand())) {
-            SendMessage toVisitor = new SendMessage(visitorId, MESSAGE.MAIN_MENU.getMsg());
-            toVisitor.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
-            response.add(toVisitor);
-        } else if (incomeMsg.equals(COMMAND.SCOUT.getCommand())) {
+        }  else if (incomeMsg.equals(COMMAND.SCOUT.getCommand())) {
             SendMessage toVisitor = new SendMessage(visitorId, MESSAGE.SEARCH_GENDER.getMsg());
             toVisitor.setReplyMarkup(InlineKeyboard.getGenderOptionForSearch());
             response.add(toVisitor);
@@ -184,13 +176,6 @@ public class MessageHandlerImpl implements MessageHandler {
             SendMessage toVisitor = new SendMessage(visitorId, MESSAGE.CONTACT_TARGET.getMsg());
             toVisitor.setReplyMarkup(ReplyKeyboard.getReplyOnRequestKeyboard());
             response.add(toVisitor);
-//            SendMessage secondMsg = new SendMessage()
-//                                                    .builder()
-//                                                    .chatId(visitorId)
-//                                                    .text("Введитие данные")
-//                                                    .replyMarkup(ReplyKeyboard.getSearchKeyboard())
-//                                                    .build();
-//            response.add(secondMsg);
             
         }
 
@@ -222,8 +207,6 @@ public class MessageHandlerImpl implements MessageHandler {
             msg.setText("Количество последних объявлений?");
             msg.setReplyMarkup(InlineKeyboard.getNumOptionForSearch(option));
 
-            //response.add(msg);
-
         } else if (option.matches("^[MFCT]{1} [0-9]{1,2}$")) {
 
             String[] data = option.split(" ");
@@ -242,8 +225,6 @@ public class MessageHandlerImpl implements MessageHandler {
             msg.setReplyMarkup(InlineKeyboard.getAdsView(1, offerIds.size(), timestamp));
             
             LOGGER.info("\tSRCH {}: {}", visitorId, option);
-
-            //response.add(msg);
 
         } else if (option.matches("^[0-9]{1,2}-[0-9]{1,2}-[0-9]{1,}$")) {
 
@@ -268,25 +249,21 @@ public class MessageHandlerImpl implements MessageHandler {
 
             }
 
-            //response.add(msg);
-
         } else if (option.equals("0")) {
             msg.setText("Просмотр окончен");
-            //response.add(msg);
         } else if (option.matches("PDF .+")) {
             
             msg.setText("Отчет сформирован.");
-            //response.add(msg);
             
             String queryValue = option.substring(4).trim();
             String query = "%" + queryValue + "%";
             
             long totalFound = nlService.getAdsCountByContact(query);
-            //  PDF  GENERATION
+            
             List<NLAd> queryAds = nlService.getAdsForPDFReport(query);
             ByteArrayOutputStream outputStream = PDFCreator.createAdsPdf(queryAds, queryValue, visitorId, totalFound);
             ByteArrayInputStream inputstream = new ByteArrayInputStream(outputStream.toByteArray());
-            //
+            
             SendDocument document = new SendDocument(visitorId, new InputFile(inputstream, visitorId + "_"
                     + System.currentTimeMillis() + ".pdf"));
             document.setReplyMarkup(ReplyKeyboard.getMainKeyboard());
@@ -315,30 +292,5 @@ public class MessageHandlerImpl implements MessageHandler {
         Visitor newVisitor = new Visitor(visitorId, LocalDateTime.now(), new Subscription(SUBSCRIPTION_TYPE.STANDARD), new ScoutQuery());
         return newVisitor;
     }
-
-//    //@Override
-//    public SendDocument generatePDFReport(Update update) {
-//
-//        String visitorId = String.valueOf(update.getMessage().getFrom().getId());
-//        String queryValue = update.getMessage().getText().trim();
-//        String query = "%" + queryValue + "%";
-//
-//        SendDocument response = null;
-//
-////        long totalFound = nlService.getAdsCountByContact(query);
-////
-////        if (totalFound > 0) {
-////
-////            List<NLAd> queryAds = nlService.getAdsForPDFReport(query);
-////
-////            String document = PDFCreator.createAdsPdf(queryAds, queryValue, visitorId, totalFound);
-////
-////            response = new SendDocument(visitorId, new InputFile(new File(document)));
-////            response.setReplyMarkup(ReplyKeyboard.getSearchKeyboard());
-////
-////        }
-//        return response;
-//
-//    }
 
 }
