@@ -54,8 +54,6 @@ public class VisitorServiceImpl implements VisitorService {
         return visitor;
     }
 
-
-
     @Override
     public Visitor getOptionalFullVisitorByTelegramId(String id) {
 
@@ -94,26 +92,5 @@ public class VisitorServiceImpl implements VisitorService {
     public void addRequests(int requestsNumber, String visitorId) {
         repository.addRequests(requestsNumber, visitorId);
     }
-    
-    
-//
-//    @Override
-//    public Optional<String> getOptionalVisitorsQueryStamp(String id) {
-//        return repository.findQueryStampByTelegramId(id);
-//    }
-    
-    //    @Override
-//    public String getVisitorsQueryStamp(String id) {
-//
-//        String queryStamp = repository.findQueryStampByTelegramId(id).orElseThrow();
-//
-//        return queryStamp;
-//    }
-
-    
-
-    
-
-    
 
 }

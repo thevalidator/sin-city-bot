@@ -3,7 +3,6 @@
  */
 package ru.thekrechetofficial.sincitybot.service;
 
-import java.util.Optional;
 import ru.thekrechetofficial.sincitybot.entity.Subscription;
 import ru.thekrechetofficial.sincitybot.entity.Visitor;
 
@@ -28,9 +27,5 @@ public interface VisitorService {
     Visitor getOptionalFullVisitorByTelegramId(String id);
 
     Subscription getVisitorsSubscription(String visitorId);
-
-//    String getVisitorsQueryStamp(String id);
-//    Optional<String> getOptionalVisitorsQueryStamp(String id);
-
     
 }

@@ -40,28 +40,6 @@ public class ReplyKeyboard {
         return keyboard;
     }
     
-    
-//    public static ReplyKeyboardMarkup getSearchKeyboard() {
-//        
-//        ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
-//        keyboard.setSelective(true);
-//        keyboard.setResizeKeyboard(true);
-//        //keyboard.setOneTimeKeyboard(true);
-//        
-//        ArrayList<KeyboardRow> rows = new ArrayList<>();
-//        
-//        KeyboardRow firstRow = new KeyboardRow();
-//        firstRow.add(COMMAND.SCOUT.getCommand());
-//        firstRow.add(COMMAND.TARGET.getCommand());
-//        firstRow.add(COMMAND.BACK.getCommand());
-//        
-//        rows.add(firstRow);
-//        
-//        keyboard.setKeyboard(rows);
-//
-//        return keyboard;
-//    }
-    
     public static ForceReplyKeyboard getReplyOnRequestKeyboard() {
         ForceReplyKeyboard keyboard = new ForceReplyKeyboard();
         keyboard.setForceReply(true);

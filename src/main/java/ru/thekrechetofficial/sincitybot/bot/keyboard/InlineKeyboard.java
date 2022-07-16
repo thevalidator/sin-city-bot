@@ -14,33 +14,6 @@ import ru.thekrechetofficial.sincitybot.entity.ad.Gender;
  */
 public class InlineKeyboard {
 
-    public static InlineKeyboardMarkup getMainKeyboard() {
-
-        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
-
-        InlineKeyboardButton searchButton = new InlineKeyboardButton();
-        searchButton.setText("Поиск");
-        searchButton.setCallbackData("SRCH");
-
-        List<InlineKeyboardButton> firstRow = new ArrayList<>();
-        firstRow.add(searchButton);
-
-        InlineKeyboardButton helpButton = new InlineKeyboardButton();
-        helpButton.setText("Помощь");
-        helpButton.setCallbackData("HLP");
-
-        List<InlineKeyboardButton> thirdRow = new ArrayList<>();
-        thirdRow.add(helpButton);
-
-        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
-        rows.add(firstRow);
-        rows.add(thirdRow);
-
-        keyboard.setKeyboard(rows);
-
-        return keyboard;
-    }
-
     public static InlineKeyboardMarkup getGenderOptionForSearch() {
 
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
@@ -83,8 +56,8 @@ public class InlineKeyboard {
 
         String btnOneText = "5";
         String btnTwoText = "10";
-        String btnThreeText = "15";
-        String btnFourText = "20";
+        String btnThreeText = "20";
+        String btnFourText = "40";
 
         InlineKeyboardButton btnOne = new InlineKeyboardButton();
         btnOne.setText(btnOneText);
