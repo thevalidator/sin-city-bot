@@ -12,7 +12,7 @@
     
     <groupId>ru.thekrechetofficial</groupId>
     <artifactId>sincitybot</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-release</version>
     <packaging>war</packaging>
     <name>sincitybot</name>
     <description>SinCityNights telegram bot</description>
